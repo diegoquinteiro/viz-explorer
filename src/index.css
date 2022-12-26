@@ -1,0 +1,220 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #333;
+  color: #eee;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  height: auto;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  width: auto;
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  box-shadow: 1px 1px 1px #333;
+}
+
+#header h1 {
+  display: flexbox;
+  flex-grow: 2;
+  margin: 0 !important;
+}
+
+#header h1 {
+  margin: 1rem;
+}
+#header button {
+  margin-right: 1rem;
+}
+
+
+#main {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 2;
+  background-color: #222;
+  max-width: 100%;
+  overflow: hidden;
+  box-shadow: 1px 1px 1px #333;
+}
+
+#viewer {
+  display: flexbox;
+  flex-grow: 2;
+}
+
+#editor {
+  display: flexbox;
+  font-weight: lighter;
+  max-height: max-content;
+  min-width: 20rem;
+  overflow: auto;
+  padding: 1rem;
+  box-shadow: 1px 1px 1px #333;
+}
+
+#editor ul {
+  padding-left: 1rem;
+  list-style: none;
+}
+
+#render {
+  width: 100%;
+  height: 100%;
+}
+
+#status {
+  font-weight: lighter;
+  padding: 0.3rem;
+  box-shadow: 1px 1px 1px #333;
+}
+
+.modifier .flow {
+  color: #fff;
+}
+.modifier .entities {
+  opacity: 0.2;
+}
+.modifier .entities input {
+  visibility: hidden;
+}
+.flow {
+  color: aqua;
+}
+
+.entities {
+  color: bisque;
+}
+
+.modifier, .modifier input {
+  cursor: pointer;
+}
+
+.modifier .flow input{
+  appearance: radio;
+}
+
+svg text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+  Arial, sans-serif !important;
+  font-weight: lighter;
+}
+svg .cluster > polygon {
+  box-shadow: 1px 1px 5px gray;
+}
+
+svg .cluster:hover,
+svg .cluster.selected {
+  cursor: pointer !important;
+  fill: bisque;
+}
+svg .cluster:hover polygon,
+svg .cluster.selected polygon {
+  stroke: bisque;
+}
+
+#graph0 > polygon {
+  fill: #222;
+}
+
+svg .node {
+  fill: rgba(200,255,230, 0.6);
+}
+svg .node > ellipse {
+  fill: rgba(200,255,230, 0.2);
+  stroke: rgba(200,255,230, 0);
+}
+
+svg .node:hover {
+  cursor: pointer;
+  fill: rgba(255, 228, 196, 0.6);
+}
+svg .node:hover > ellipse {
+  stroke: rgba(255, 228, 196, 0.6);
+}
+
+svg .node.selected {
+  fill: rgba(200,255,230, 1);
+}
+
+svg .node.selected > ellipse {
+  stroke: rgba(200,255,230, 1);
+}
+
+svg .node.selected:hover {
+  fill: rgba(255, 228, 196, 1);
+}
+
+svg .node.selected:hover > ellipse {
+  stroke: rgba(255, 228, 196, 1);
+}
+
+svg .node.highlight {
+  fill: rgba(200,255,230, 1);
+}
+
+svg .node.highlight > ellipse {
+  stroke: rgba(200,255,230, 1);
+}
+
+svg .node.highlight:hover {
+  fill: rgba(255, 228, 196, 1);
+}
+
+svg .node.highlight:hover > ellipse {
+  stroke: rgba(255, 228, 196, 1);
+}
+
+svg .edge > path,
+svg .edge > polygon {
+  stroke: rgba(95, 158, 160, 0.2);
+}
+svg .edge > polygon {
+  fill: rgba(95, 158, 160,0.2);
+}
+
+svg .edge.selected > path,
+svg .edge.selected > polygon {
+  stroke: rgba(95, 158, 160, 1);
+}
+svg .edge.selected > polygon {
+  fill: rgba(95, 158, 160, 1);
+}
+
+svg .cluster {
+  fill: #fff;
+}
+svg .cluster > polygon {
+  fill: rgba(255,255,255, 0.1);
+  stroke: rgba(255,255,255, 0);
+}
+
+svg:has(.selected) .cluster:not(.selected),
+svg:has(.selected) .node:not(.selected):not(.highlight) {
+  opacity: 0.5;
+}
+
+svg:has(.selected) .edge:not(.selected)  {
+  opacity: 0;
+}
+
+.modifier svg:has(.selected) .edge.highlight:not(.selected) {
+  opacity: 0.5;
+}
