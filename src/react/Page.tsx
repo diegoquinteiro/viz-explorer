@@ -2,9 +2,10 @@ import { throws } from "assert";
 import * as React from "react";
 import sampleFile from "../viz/sample-file";
 import FileDescription from "../util/FileDescription";
-import Explorer from "./Explorer.react";
-import Header from "./Header.react";
+import Explorer from "./Explorer";
+import Header from "./Header";
 import { Int } from "ts-graphviz";
+import { stat } from "fs";
 
 type PageState = {
    files: FileDescription[],
@@ -23,16 +24,26 @@ class Page extends React.Component<{}, PageState> {
 
     handleFileOpen = (file: FileDescription) => {
         this.setState((state, props) => ({
+            selectedTab: state.files.length,
             files: [...state.files, file],
-            selectedTab: state.files.length
         }));
     };
 
-    handleCloseTab = (tab:Int) => {
-        this.setState((state, props) => ({
-            files: state.files.filter((f, i) => i !== tab),
-            selectedTab: state.selectedTab == tab ? 0: state.selectedTab,
-        }));
+    handleCloseTab = (tab:Int, e:React.SyntheticEvent) => {
+        this.setState((state, props):PageState => {
+            let selectedTab = state.selectedTab;
+            if (state.selectedTab > tab) {
+              selectedTab--;
+            } else if (state.selectedTab === tab) {
+              selectedTab--;
+            }
+            selectedTab = Math.min(selectedTab, state.files.length - 1);
+            return {
+              selectedTab: selectedTab,
+              files: state.files.filter((f, i) => i !== tab),
+            }
+        });
+        e.stopPropagation();
     };
 
     handleSelectTab = (tab:Int) => {
@@ -42,6 +53,7 @@ class Page extends React.Component<{}, PageState> {
     };
 
     render(): React.ReactNode {
+        console.log(this.state.selectedTab);
         return <div className="page">
             <Header onFileOpen={this.handleFileOpen}/>
             <ul className="tabs">
@@ -53,7 +65,9 @@ class Page extends React.Component<{}, PageState> {
                 )}
             </ul>
             {this.state.files.map((file, i) =>
-                <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}><Explorer file={file} /></div>
+                <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}>
+                    <Explorer file={file} />
+                </div>
             )}
         </div>;
     }

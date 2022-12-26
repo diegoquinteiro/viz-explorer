@@ -2,6 +2,7 @@ import React from "react";
 import { RootGraphModel } from "ts-graphviz";
 import FileDescription from "../util/FileDescription";
 import VizExplorer from "../viz/viz-explorer";
+import Outline from "./Outline";
 
 type ExplorerProps = {
     file: FileDescription,
@@ -29,7 +30,6 @@ class Explorer extends React.Component<ExplorerProps> {
 
     renderGraph = () => {
         const filePathElement = this.filePathElement.current;
-        const fileContentsElement = this.fileContentsElement.current;
         const renderElement = this.renderElement.current;
 
         let rootGraph: RootGraphModel = null;
@@ -41,16 +41,14 @@ class Explorer extends React.Component<ExplorerProps> {
         }
 
         VizExplorer.renderGraph(renderElement, filePathElement, this.props.file.contents, this.props.file.path);
-        VizExplorer.renderEditor(rootGraph, rootGraph, fileContentsElement, fileContentsElement, this.props.file.path, renderElement, filePathElement);
+        //VizExplorer.renderEditor(rootGraph, rootGraph, fileContentsElement, fileContentsElement, this.props.file.path, renderElement, filePathElement);
     };
 
     render(): React.ReactNode {
         return (
             <div className="explorer">
                 <section className="main">
-                    <section className="editor">
-                        <div ref={this.fileContentsElement}></div>
-                    </section>
+                    <Outline file={this.props.file} />
                     <section className="viewer">
                         <div className="render" data-zoom-on-wheel="min-scale: 0.3; max-scale: 20;" data-pan-on-drag ref={this.renderElement}></div>
                     </section>
