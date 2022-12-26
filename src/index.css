@@ -5,6 +5,7 @@ body {
   padding: 0;
   background-color: #333;
   color: #eee;
+  user-select: none; /* Standard syntax */
 }
 
 svg {
@@ -46,6 +47,52 @@ body, #root, .page {
 }
 .header button {
   margin-right: 1rem;
+}
+
+.tabs {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-left: 1rem;
+}
+.tabs li {
+  display: flexbox;
+  padding: 0.5rem;
+  margin: 0;
+  margin-left: 0.2rem;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+.tabs li.selected {
+  background-color: #222;
+}
+.tabs li:not(.selected):hover {
+  background-color: rgba(0,0,0, 0.1);
+}
+.tabs li button {
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+  margin-right: 0;
+  width: 1.2rem;
+  height: 1.2rem;
+  background: none;
+  border: none;
+  color: #ccc;
+  rotate: 45deg;
+  border-radius: 0.5rem;
+}
+.tabs li button:hover {
+  background: rgba(255,255,255,0.1);
+}
+.tabContent {
+  display: none;
+}
+.tabContent.selected {
+  display: flex !important;
+  overflow: hidden;
+  flex-grow: 2;
+  max-height: 100%;
 }
 
 .explorer {

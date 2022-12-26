@@ -7,7 +7,7 @@ type ExplorerProps = {
     file: FileDescription,
 }
 
-class Explorer extends React.Component<ExplorerProps, ExplorerState> {
+class Explorer extends React.Component<ExplorerProps> {
     filePathElement: React.RefObject<HTMLElement>;
     fileContentsElement: React.RefObject<HTMLDivElement>;
     renderElement: React.RefObject<HTMLDivElement>;
