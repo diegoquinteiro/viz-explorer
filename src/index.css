@@ -18,9 +18,13 @@ html, body {
   height: 100%;
 }
 
-body {
+body, #root, .page {
   display: flex;
   flex-direction: column;
+  flex-grow: 2;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 #header {
