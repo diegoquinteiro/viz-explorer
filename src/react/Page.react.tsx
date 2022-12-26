@@ -1,11 +1,7 @@
 import * as React from "react";
 import FileDescription from "../util/FileDescription";
-import electronAPI from "../api/electron-api"
 import VizExplorer from "../viz/viz-explorer";
 import Header from "./Header.react";
-
-let openDotString = "digraph {\n a\n b\n a -> b\n subgraph Sub {\n c\n d\n c -> d}\n}";
-let openPath = "/sample.dot";
 
 class Page extends React.Component<{}> {
     filePathElement: React.RefObject<HTMLElement>;
@@ -28,8 +24,6 @@ class Page extends React.Component<{}> {
             const fileDot = VizExplorer.parse(fileDescription.contents);
             VizExplorer.renderGraph(renderElement, filePathElement, fileDescription.contents, fileDescription.path);
             VizExplorer.renderEditor(fileDot, fileDot, fileContentsElement, fileContentsElement, fileDescription.path, renderElement, filePathElement);
-            openDotString = fileDescription.contents;
-            openPath = fileDescription.path;
         }
         catch (e) {
             fileContentsElement.innerText = "Invalid DOT file."
