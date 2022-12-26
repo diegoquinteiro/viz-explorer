@@ -1,51 +1,33 @@
+import { throws } from "assert";
 import * as React from "react";
+import sampleFile from "../viz/sample-file";
 import FileDescription from "../util/FileDescription";
-import VizExplorer from "../viz/viz-explorer";
+import Explorer from "./Explorer.react";
 import Header from "./Header.react";
 
-class Page extends React.Component<{}> {
-    filePathElement: React.RefObject<HTMLElement>;
-    fileContentsElement: React.RefObject<HTMLDivElement>;
-    renderElement: React.RefObject<HTMLDivElement>;
+type PageState = {
+   files: FileDescription[],
+}
+class Page extends React.Component<{}, PageState> {
+
 
     constructor(props: {}) {
         super(props);
-        this.filePathElement = React.createRef();
-        this.fileContentsElement = React.createRef();
-        this.renderElement = React.createRef();
+        this.state = {
+            files: [sampleFile],
+        }
     }
 
-    handleFileOpen = (fileDescription: FileDescription) => {
-        const filePathElement = this.filePathElement.current;
-        const fileContentsElement = this.fileContentsElement.current;
-        const renderElement = this.renderElement.current;
-
-        try {
-            const fileDot = VizExplorer.parse(fileDescription.contents);
-            VizExplorer.renderGraph(renderElement, filePathElement, fileDescription.contents, fileDescription.path);
-            VizExplorer.renderEditor(fileDot, fileDot, fileContentsElement, fileContentsElement, fileDescription.path, renderElement, filePathElement);
-        }
-        catch (e) {
-            fileContentsElement.innerText = "Invalid DOT file."
-        }
+    handleFileOpen = (file: FileDescription) => {
+        this.setState((state, props) => ({
+            files: [file]
+        }));
     };
 
-    render() {
+    render(): React.ReactNode {
         return <div className="page">
             <Header onFileOpen={this.handleFileOpen}/>
-
-            <section id="main">
-                <section id="editor">
-                    <div id="fileContents" ref={this.fileContentsElement}></div>
-                </section>
-                <section id="viewer">
-                    <div id="render" data-zoom-on-wheel="min-scale: 0.3; max-scale: 20;" data-pan-on-drag ref={this.renderElement}></div>
-                </section>
-            </section>
-
-            <section id="status">
-                File: <em id="filePath" ref={this.filePathElement}></em>
-            </section>
+            <Explorer file={this.state.files[0]} />
         </div>;
     }
 }

@@ -214,7 +214,6 @@ function filterGraphByEditor (dotString: string, el:HTMLElement) {
       });
     }
   });
-  console.log(toBeRemoved);
   toBeRemoved.forEach((subgraph) => removeSubgraph(dot, subgraph));
   return dot;
 }

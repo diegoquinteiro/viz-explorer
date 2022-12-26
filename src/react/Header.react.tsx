@@ -18,7 +18,7 @@ class Header extends React.Component<HeaderProps> {
 
     render() {
         return (
-            <section id="header">
+            <section className="header">
                 <h1>📁 GraphViz Explorer</h1>
                 <button type="button" onClick={this.handleOpenFileClick}>Open a File</button>
             </section>

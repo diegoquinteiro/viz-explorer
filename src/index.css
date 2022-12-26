@@ -27,7 +27,7 @@ body, #root, .page {
   height: 100%;
 }
 
-#header {
+.header {
   width: auto;
   display: flex;
   flex-direction: row;
@@ -35,21 +35,27 @@ body, #root, .page {
   box-shadow: 1px 1px 1px #333;
 }
 
-#header h1 {
+.header h1 {
   display: flexbox;
   flex-grow: 2;
   margin: 0 !important;
 }
 
-#header h1 {
+.header h1 {
   margin: 1rem;
 }
-#header button {
+.header button {
   margin-right: 1rem;
 }
 
-
-#main {
+.explorer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 2;
+  max-height: 100%;
+  overflow: hidden;
+}
+.main {
   display: flex;
   flex-direction: row;
   flex-grow: 2;
@@ -59,12 +65,12 @@ body, #root, .page {
   box-shadow: 1px 1px 1px #333;
 }
 
-#viewer {
+.viewer {
   display: flexbox;
   flex-grow: 2;
 }
 
-#editor {
+.editor {
   display: flexbox;
   font-weight: lighter;
   max-height: max-content;
@@ -74,17 +80,17 @@ body, #root, .page {
   box-shadow: 1px 1px 1px #333;
 }
 
-#editor ul {
+.editor ul {
   padding-left: 1rem;
   list-style: none;
 }
 
-#render {
+.render {
   width: 100%;
   height: 100%;
 }
 
-#status {
+.status {
   font-weight: lighter;
   padding: 0.3rem;
   box-shadow: 1px 1px 1px #333;
