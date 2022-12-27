@@ -5,12 +5,11 @@ body {
   padding: 0;
   background-color: #333;
   color: #eee;
-  user-select: none; /* Standard syntax */
+  user-select: none;
 }
 
 svg {
   width: 100%;
-  height: 100%;
   height: auto;
 }
 
@@ -28,26 +27,6 @@ body, #root, .page {
   height: 100%;
 }
 
-.header {
-  width: auto;
-  display: flex;
-  flex-direction: row;
-  padding: 1rem;
-  box-shadow: 1px 1px 1px #333;
-}
-
-.header h1 {
-  display: flexbox;
-  flex-grow: 2;
-  margin: 0 !important;
-}
-
-.header h1 {
-  margin: 1rem;
-}
-.header button {
-  margin-right: 1rem;
-}
 
 .tabs {
   display: flex;
@@ -57,19 +36,19 @@ body, #root, .page {
   margin-left: 1rem;
 }
 .tabs li {
-  display: flexbox;
-  padding: 0.5rem;
-  margin: 0;
+  padding: 0.3rem 0.3rem 0.3rem 0.5rem;
   margin-left: 0.2rem;
+  margin-top: 0.5rem;
   border-radius: 0.25rem 0.25rem 0 0;
 }
 .tabs li.selected {
   background-color: #222;
+  box-shadow: 1px 1px 2px 2px rgba(0,0,0, 0.1);
 }
 .tabs li:not(.selected):hover {
   background-color: rgba(0,0,0, 0.1);
 }
-.tabs li button {
+.tabs li .close {
   cursor: pointer;
   padding: 0;
   margin-left: 1rem;
@@ -82,7 +61,14 @@ body, #root, .page {
   rotate: 45deg;
   border-radius: 0.5rem;
 }
-.tabs li button:hover {
+.tabs li .open {
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #ccc;
+}
+.tabs li .close:hover {
   background: rgba(255,255,255,0.1);
 }
 .tabContent {
@@ -94,7 +80,18 @@ body, #root, .page {
   flex-grow: 2;
   max-height: 100%;
 }
-
+.empty {
+  display: flex;
+  overflow: hidden;
+  max-height: 100%;
+  flex-basis: 100%;
+  background-color: #222;
+  align-items: center;
+  justify-content: center;
+}
+.empty span {
+  color:rgba(200,200,200, 0.3);
+}
 .explorer {
   display: flex;
   flex-direction: column;
@@ -113,18 +110,15 @@ body, #root, .page {
 }
 
 .viewer {
-  display: flexbox;
   flex-grow: 2;
 }
 
 .editor {
-  display: flexbox;
   font-weight: lighter;
   max-height: max-content;
   min-width: 20rem;
   overflow: auto;
-  padding: 1rem;
-  box-shadow: 1px 1px 1px #333;
+  border-right: 1px solid #333;
 }
 
 .editor ul {
@@ -135,6 +129,7 @@ body, #root, .page {
 .render {
   width: 100%;
   height: 100%;
+  overflow: auto !important;
 }
 
 .status {
@@ -278,4 +273,9 @@ svg:has(.selected) .edge:not(.selected)  {
 
 .subgraph.disabled .label {
   opacity: 0.3;
+}
+
+.path:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }

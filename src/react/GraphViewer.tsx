@@ -169,7 +169,7 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
                         if (error) return `Something went wrong: ${error.message}`;
                         if (data) return <div
                                 className="render"
-                                data-zoom-on-wheel="min-scale: 0.3; max-scale: 20;"
+                                data-zoom-on-wheel="min-scale: 0.5; max-scale: 10;"
                                 data-pan-on-drag
                                 dangerouslySetInnerHTML={{"__html": data.outerHTML}}
                                 ref={this.svgContainer}

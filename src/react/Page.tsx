@@ -1,10 +1,9 @@
-import { throws } from "assert";
+import electronAPI from "../api/electron-api";
 import * as React from "react";
-import sampleFile from "../viz/sample-file";
 import FileDescription from "../util/FileDescription";
 import Explorer from "./Explorer";
-import Header from "./Header";
 import VizExplorer from "../viz/viz-explorer";
+import sampleFile from "../viz/sample-file";
 
 type PageState = {
    files: FileDescription[],
@@ -36,19 +35,6 @@ class Page extends React.Component<{}, PageState> {
         });
     }
 
-    handleFileOpen = (file: FileDescription) => {
-        try {
-            VizExplorer.parse(file.contents);
-            this.setState((state, props) => ({
-                selectedTab: state.files.length,
-                files: [...state.files, file],
-            }));
-        }
-        catch (e) {
-            alert("Invalid DOT file, please check the file.");
-        }
-    };
-
     handleCloseTab = (tab:number, e:React.SyntheticEvent) => {
         this.setState((state, props) => {
             let selectedTab = state.selectedTab;
@@ -70,22 +56,40 @@ class Page extends React.Component<{}, PageState> {
         });
     };
 
+    handleOpenFileClick = async (e: React.SyntheticEvent) => {
+        const file = await electronAPI.openFile();
+        try {
+            VizExplorer.parse(file.contents);
+            this.setState((state, props) => ({
+                selectedTab: state.files.length,
+                files: [...state.files, file],
+            }));
+        }
+        catch (e) {
+            alert("Invalid DOT file, please check the file.");
+        }
+    };
+
+
     render(): React.ReactNode {
         return <div className={["page", this.state.modifier ? "modifier" : ""].join(" ")} ref={this.pageElement}>
-            <Header onFileOpen={this.handleFileOpen}/>
             <ul className="tabs">
                 {this.state.files.map((file, i) =>
                     <li key={i} className={i == this.state.selectedTab ? "selected" : null} onClick={this.handleSelectTab.bind(this, i)}>
-                        📄 {file.path.replace(/^.*[\\\/]/, '')}
-                        <button onClick={this.handleCloseTab.bind(this, i)}>✚</button>
+                        ❖ &nbsp;{file.path.replace(/^.*[\\\/]/, '')}
+                        <button className="close" onClick={this.handleCloseTab.bind(this, i)}>✚</button>
                     </li>
                 )}
+                <li>
+                    <button className="open" type="button" onClick={this.handleOpenFileClick}>📂 Open a file</button>
+                </li>
             </ul>
             {this.state.files.map((file, i) =>
                 <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}>
-                    <Explorer graph={VizExplorer.parse(file.contents)} name={file.path.replace(/^.*[\\\/]/, '')} />
+                    <Explorer graph={VizExplorer.parse(file.contents)} path={file.path} />
                 </div>
             )}
+            {this.state.files.length == 0 ? <div className="empty"><span>No graph open</span></div>: null}
         </div>;
     }
 }

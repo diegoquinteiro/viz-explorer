@@ -1,4 +1,5 @@
 import React from "react";
+import electronAPI from "../api/electron-api";
 import { GraphBaseModel, RootGraph, RootGraphModel } from "ts-graphviz";
 import VizExplorer from "../viz/viz-explorer";
 import GraphViewer from "./GraphViewer";
@@ -6,7 +7,7 @@ import { Subgraph } from "./Subgraph";
 
 type ExplorerProps = {
     graph: RootGraphModel,
-    name: string,
+    path: string,
 }
 
 type ExplorerState = {
@@ -29,14 +30,6 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         }
     }
 
-    // componentDidMount(): void {
-    //     this.renderGraph();
-    // }
-
-    // componentDidUpdate(): void {
-    //     this.renderGraph();
-    // }
-
     filterSubgraph = (subgraph:GraphBaseModel, path:number[]): GraphBaseModel => {
         subgraph.subgraphs.forEach((subgraph, i) => this.filterSubgraph(subgraph, [...path, i]));
         this.state.graphFilters
@@ -54,11 +47,6 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         this.filterSubgraph(graph, [0]);
         return graph;
     }
-
-    // renderGraph = ():void => {
-    //     const renderElement = this.renderElement.current;
-    //     VizExplorer.renderGraph(renderElement, this.getFilteredGraph(), this.props.name);
-    // };
 
     handleFilter = (newFilter:number[], remove:boolean):void => {
         let filter = [0, ...newFilter];
@@ -88,13 +76,10 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                             />
                         </ul>
                     </section>
-                    {/* <section className="viewer">
-                        <div className="render" data-zoom-on-wheel="min-scale: 0.3; max-scale: 20;" data-pan-on-drag ref={this.renderElement}></div>
-                    </section> */}
                     <GraphViewer graph={this.getFilteredGraph()} />
                 </section>
                 <section className="status">
-                    File: <em>{this.props.name}</em>
+                    File: <em className="path" onClick={electronAPI.openFolder.bind(this, this.props.path)}>{this.props.path}</em>
                 </section>
             </div>
         );
