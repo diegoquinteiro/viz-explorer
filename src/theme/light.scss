@@ -1,0 +1,315 @@
+$backdrop: #eee;
+$primary: #345;
+$background: #abc;
+$secondary: #377;
+$secondary-foreground: #5999;
+$terciary: #337;
+$terciary-foreground: #3379;
+$accent: #939;
+$darken: rgba(200, 200, 255, 0.1);
+$lighten: rgba(0, 30, 50, 0.2);
+
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+		Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: $background;
+	color: $primary;
+	user-select: none;
+}
+
+svg {
+	width: 100%;
+	height: auto;
+}
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+}
+
+body,
+#root,
+.page {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 2;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+
+.tabs {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	margin-left: 1rem;
+}
+
+.tabs li {
+	padding: 0.3rem 0.3rem 0.3rem 0.5rem;
+	margin-left: 0.2rem;
+	margin-top: 0.5rem;
+	border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.tabs li.selected {
+	background-color: $backdrop;
+	box-shadow: 1px 1px 2px 2px $darken;
+}
+
+.tabs li:not(.selected):hover {
+	background-color: $darken;
+}
+
+.tabs li .close {
+	cursor: pointer;
+	padding: 0;
+	margin-left: 1rem;
+	margin-right: 0;
+	width: 1.2rem;
+	height: 1.2rem;
+	background: none;
+	border: none;
+	color: $primary;
+	rotate: 45deg;
+	border-radius: 0.5rem;
+}
+
+.tabs li .open {
+	cursor: pointer;
+	padding: 0;
+	background: none;
+	border: none;
+	color: $primary;
+}
+
+.tabs li .close:hover {
+	background: $darken;
+}
+
+.tabContent {
+	display: none;
+}
+
+.tabContent.selected {
+	display: flex !important;
+	overflow: hidden;
+	flex-grow: 2;
+	max-height: 100%;
+}
+
+.empty {
+	display: flex;
+	overflow: hidden;
+	max-height: 100%;
+	flex-basis: 100%;
+	background-color: $backdrop;
+	align-items: center;
+	justify-content: center;
+}
+
+.empty span {
+	color: $darken;
+}
+
+.explorer {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 2;
+	max-height: 100%;
+	overflow: hidden;
+}
+
+.main {
+	display: flex;
+	flex-direction: row;
+	flex-grow: 2;
+	background-color: $backdrop;
+	max-width: 100%;
+	overflow: hidden;
+	box-shadow: 1px 1px 1px $background;
+}
+
+.viewer {
+	flex-grow: 2;
+}
+
+.editor {
+	font-weight: normal;
+	max-height: max-content;
+	min-width: 20rem;
+	overflow: auto;
+	border-right: 1px solid $lighten;
+}
+
+.editor ul {
+	padding-left: 1rem;
+	list-style: none;
+}
+
+.render {
+	width: 100%;
+	height: 100%;
+	overflow: auto !important;
+}
+
+.status {
+	font-weight: normal;
+	padding: 0.3rem;
+	box-shadow: 1px 1px 1px $background;
+}
+
+.modifier .flow {
+	color: $primary;
+}
+
+.modifier .entities {
+	opacity: 0.2;
+}
+
+.modifier .entities input {
+	visibility: hidden;
+}
+
+.flow {
+	color: $accent;
+}
+
+.entities {
+	color: $secondary;
+}
+
+.modifier,
+.modifier input {
+	cursor: pointer;
+}
+
+.modifier .flow input {
+	appearance: radio;
+}
+
+svg text {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+		Arial, sans-serif !important;
+	font-weight: normal;
+}
+
+svg .cluster:hover,
+svg .cluster.selected {
+	cursor: pointer !important;
+	fill: $secondary;
+}
+
+svg .cluster:hover polygon,
+svg .cluster.selected polygon {
+	stroke: $secondary;
+}
+
+#graph0>polygon {
+	fill: $backdrop;
+}
+
+svg .node {
+	fill: $terciary;
+}
+
+svg .node>ellipse {
+	fill: $lighten;
+	stroke: none;
+}
+
+svg .node:hover {
+	cursor: pointer;
+	fill: $secondary-foreground;
+}
+
+svg .node:hover>ellipse {
+	stroke: $secondary-foreground;
+}
+
+svg .node.selected {
+	fill: $secondary;
+}
+
+svg .node.selected>ellipse {
+	stroke: $secondary;
+}
+
+svg .node.selected:hover {
+	fill: $secondary;
+}
+
+svg .node.selected:hover>ellipse {
+	stroke: $secondary;
+}
+
+svg .node.highlight {
+	fill: $secondary;
+}
+
+svg .node.highlight>ellipse {
+	stroke: $secondary;
+}
+
+svg .node.highlight:hover {
+	fill: $secondary;
+}
+
+svg .node.highlight:hover>ellipse {
+	stroke: $secondary;
+}
+
+svg .edge>path,
+svg .edge>polygon {
+	stroke: $lighten;
+}
+
+svg .edge>polygon {
+	fill: $lighten;
+}
+
+svg .edge.selected>path,
+svg .edge.selected>polygon {
+	stroke: $terciary-foreground;
+}
+
+svg .edge.selected>polygon {
+	fill: $terciary-foreground;
+}
+
+svg .cluster {
+	fill: $primary;
+}
+
+svg .cluster>polygon {
+	fill: $lighten;
+	stroke: none;
+}
+
+svg:has(.selected) .cluster:not(.selected),
+svg:has(.selected) .node:not(.selected):not(.highlight) {
+	opacity: 0.5;
+}
+
+svg:has(.selected) .edge:not(.selected) {
+	opacity: 0;
+}
+
+.modifier svg:has(.selected) .edge.highlight:not(.selected) {
+	opacity: 0.5;
+}
+
+.subgraph.disabled .label {
+	opacity: 0.3;
+}
+
+.path:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
