@@ -1,14 +1,20 @@
 import React from "react";
-import { RootGraphModel } from "ts-graphviz";
+import { GraphBaseModel, RootGraphModel } from "ts-graphviz";
 import FileDescription from "../util/FileDescription";
 import VizExplorer from "../viz/viz-explorer";
 import Outline from "./Outline";
+import { Subgraph } from "./Subgraph";
 
 type ExplorerProps = {
-    file: FileDescription,
+    graph: RootGraphModel,
+    name: string,
 }
 
-class Explorer extends React.Component<ExplorerProps> {
+type ExplorerState = {
+    graphFilters: number[][]
+}
+
+class Explorer extends React.Component<ExplorerProps, ExplorerState> {
     filePathElement: React.RefObject<HTMLElement>;
     fileContentsElement: React.RefObject<HTMLDivElement>;
     renderElement: React.RefObject<HTMLDivElement>;
@@ -18,6 +24,10 @@ class Explorer extends React.Component<ExplorerProps> {
         this.filePathElement = React.createRef();
         this.fileContentsElement = React.createRef();
         this.renderElement = React.createRef();
+
+        this.state = {
+            graphFilters: [],
+        }
     }
 
     componentDidMount(): void {
@@ -28,33 +38,61 @@ class Explorer extends React.Component<ExplorerProps> {
         this.renderGraph();
     }
 
-    renderGraph = () => {
-        const filePathElement = this.filePathElement.current;
+    filterSubgraph = (subgraph:GraphBaseModel, path:number[]): GraphBaseModel => {
+        subgraph.subgraphs.forEach((subgraph, i) => this.filterSubgraph(subgraph, [...path, i]));
+        this.state.graphFilters
+            .filter((filter) => filter.length == path.length + 1 && filter.slice(0, path.length).every((val, i) => val == path[i]))
+            .map(filter => subgraph.subgraphs[filter[filter.length - 1]])
+            .forEach(filteredOut => subgraph.removeSubgraph(filteredOut));
+        return subgraph;
+    }
+
+    getFilteredGraph = (): RootGraphModel => {
+        let graph = VizExplorer.parse(VizExplorer.toString(this.props.graph));
+        this.filterSubgraph(graph, [0]);
+        return graph;
+    }
+
+    renderGraph = ():void => {
         const renderElement = this.renderElement.current;
-
-        let rootGraph: RootGraphModel = null;
-        try {
-            rootGraph = VizExplorer.parse(this.props.file.contents);
-        }
-        catch {
-            alert("Invalid GraphViz DOT file.");
-        }
-
-        VizExplorer.renderGraph(renderElement, filePathElement, this.props.file.contents, this.props.file.path);
-        //VizExplorer.renderEditor(rootGraph, rootGraph, fileContentsElement, fileContentsElement, this.props.file.path, renderElement, filePathElement);
+        VizExplorer.renderGraph(renderElement, this.getFilteredGraph(), this.props.name);
     };
 
+    handleFilter = (newFilter:number[], remove:boolean):void => {
+        let filter = [0, ...newFilter];
+        if (remove) {
+            this.setState((state, props) => ({
+                graphFilters: state.graphFilters.filter(f => !f.every((val, i) => val == filter[i]))
+            }));
+        }
+        else {
+            this.setState((state, props) => ({
+                graphFilters: [...state.graphFilters, filter]
+            }));
+        }
+    }
+
     render(): React.ReactNode {
+        console.log(this.state.graphFilters);
         return (
             <div className="explorer">
                 <section className="main">
-                    <Outline file={this.props.file} />
+                    <section className="editor">
+                        <ul>
+                            <Subgraph
+                                graph={this.props.graph}
+                                filteredOut={this.state.graphFilters.some(f => f[0] == 0 && f.length == 1)}
+                                graphFilters={this.state.graphFilters.filter(f => f[0] == 0 && f.length > 1).map(f => f.slice(1))}
+                                onFilter={this.handleFilter}
+                            />
+                        </ul>
+                    </section>
                     <section className="viewer">
                         <div className="render" data-zoom-on-wheel="min-scale: 0.3; max-scale: 20;" data-pan-on-drag ref={this.renderElement}></div>
                     </section>
                 </section>
                 <section className="status">
-                    File: <em ref={this.filePathElement}>{this.props.file.path}</em>
+                    File: <em>{this.props.name}</em>
                 </section>
             </div>
         );

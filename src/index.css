@@ -275,3 +275,7 @@ svg:has(.selected) .edge:not(.selected)  {
 .modifier svg:has(.selected) .edge.highlight:not(.selected) {
   opacity: 0.5;
 }
+
+.subgraph.disabled .label {
+  opacity: 0.3;
+}

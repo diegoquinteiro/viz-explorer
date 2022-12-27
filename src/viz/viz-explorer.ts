@@ -32,11 +32,9 @@ document.addEventListener('keyup', (e) => {
   }
 });
 
-function renderGraph(renderElement: HTMLElement, filePathElement:HTMLElement, dotString: string, path: string) {
-  let dot = VizExplorer.parse(dotString);
+function renderGraph(renderElement: HTMLElement, dot: RootGraphModel, path: string) {
   VizExplorer.toSVG(dot).then((svg) => {
     renderElement.replaceChildren(svg);
-    filePathElement.innerText = path;
     makeInteractive(renderElement, svg);
   });
 }

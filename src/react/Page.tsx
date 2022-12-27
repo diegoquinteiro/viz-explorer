@@ -4,15 +4,13 @@ import sampleFile from "../viz/sample-file";
 import FileDescription from "../util/FileDescription";
 import Explorer from "./Explorer";
 import Header from "./Header";
-import { Int } from "ts-graphviz";
-import { stat } from "fs";
+import VizExplorer from "../viz/viz-explorer";
 
 type PageState = {
    files: FileDescription[],
-   selectedTab: Int,
+   selectedTab: number,
 }
 class Page extends React.Component<{}, PageState> {
-
 
     constructor(props: {}) {
         super(props);
@@ -23,21 +21,25 @@ class Page extends React.Component<{}, PageState> {
     }
 
     handleFileOpen = (file: FileDescription) => {
-        this.setState((state, props) => ({
-            selectedTab: state.files.length,
-            files: [...state.files, file],
-        }));
+        try {
+            VizExplorer.parse(file.contents);
+            this.setState((state, props) => ({
+                selectedTab: state.files.length,
+                files: [...state.files, file],
+            }));
+        }
+        catch (e) {
+            alert("Invalid DOT file, please check the file.");
+        }
     };
 
-    handleCloseTab = (tab:Int, e:React.SyntheticEvent) => {
+    handleCloseTab = (tab:number, e:React.SyntheticEvent) => {
         this.setState((state, props):PageState => {
             let selectedTab = state.selectedTab;
-            if (state.selectedTab > tab) {
-              selectedTab--;
-            } else if (state.selectedTab === tab) {
+            if (selectedTab >= tab) {
               selectedTab--;
             }
-            selectedTab = Math.min(selectedTab, state.files.length - 1);
+            selectedTab = Math.max(selectedTab, 0);
             return {
               selectedTab: selectedTab,
               files: state.files.filter((f, i) => i !== tab),
@@ -46,14 +48,13 @@ class Page extends React.Component<{}, PageState> {
         e.stopPropagation();
     };
 
-    handleSelectTab = (tab:Int) => {
+    handleSelectTab = (tab:number) => {
         this.setState({
             selectedTab: tab,
         });
     };
 
     render(): React.ReactNode {
-        console.log(this.state.selectedTab);
         return <div className="page">
             <Header onFileOpen={this.handleFileOpen}/>
             <ul className="tabs">
@@ -66,7 +67,7 @@ class Page extends React.Component<{}, PageState> {
             </ul>
             {this.state.files.map((file, i) =>
                 <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}>
-                    <Explorer file={file} />
+                    <Explorer graph={VizExplorer.parse(file.contents)} name={file.path.replace(/^.*[\\\/]/, '')} />
                 </div>
             )}
         </div>;
