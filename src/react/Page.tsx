@@ -12,12 +12,28 @@ type PageState = {
 }
 class Page extends React.Component<{}, PageState> {
 
+    pageElement: React.RefObject<HTMLDivElement>;
+
     constructor(props: {}) {
         super(props);
         this.state = {
-            files: [sampleFile, sampleFile],
-            selectedTab: 0,
+            files: [sampleFile],
+            selectedTab: 0
         }
+        this.pageElement = React.createRef();
+    }
+
+    componentDidMount(): void {
+        document.addEventListener('keydown', (e) => {
+            if (e.key == "Shift") {
+                this.pageElement.current.classList.add("modifier");
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.key == "Shift") {
+                this.pageElement.current.classList.remove("modifier");
+            }
+        });
     }
 
     handleFileOpen = (file: FileDescription) => {
@@ -34,15 +50,15 @@ class Page extends React.Component<{}, PageState> {
     };
 
     handleCloseTab = (tab:number, e:React.SyntheticEvent) => {
-        this.setState((state, props):PageState => {
+        this.setState((state, props) => {
             let selectedTab = state.selectedTab;
             if (selectedTab >= tab) {
               selectedTab--;
             }
             selectedTab = Math.max(selectedTab, 0);
             return {
-              selectedTab: selectedTab,
-              files: state.files.filter((f, i) => i !== tab),
+                selectedTab: selectedTab,
+                files: state.files.filter((f, i) => i !== tab),
             }
         });
         e.stopPropagation();
@@ -55,7 +71,7 @@ class Page extends React.Component<{}, PageState> {
     };
 
     render(): React.ReactNode {
-        return <div className="page">
+        return <div className={["page", this.state.modifier ? "modifier" : ""].join(" ")} ref={this.pageElement}>
             <Header onFileOpen={this.handleFileOpen}/>
             <ul className="tabs">
                 {this.state.files.map((file, i) =>

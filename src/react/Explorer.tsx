@@ -1,8 +1,7 @@
 import React from "react";
-import { GraphBaseModel, RootGraphModel } from "ts-graphviz";
-import FileDescription from "../util/FileDescription";
+import { GraphBaseModel, RootGraph, RootGraphModel } from "ts-graphviz";
 import VizExplorer from "../viz/viz-explorer";
-import Outline from "./Outline";
+import GraphViewer from "./GraphViewer";
 import { Subgraph } from "./Subgraph";
 
 type ExplorerProps = {
@@ -30,13 +29,13 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         }
     }
 
-    componentDidMount(): void {
-        this.renderGraph();
-    }
+    // componentDidMount(): void {
+    //     this.renderGraph();
+    // }
 
-    componentDidUpdate(): void {
-        this.renderGraph();
-    }
+    // componentDidUpdate(): void {
+    //     this.renderGraph();
+    // }
 
     filterSubgraph = (subgraph:GraphBaseModel, path:number[]): GraphBaseModel => {
         subgraph.subgraphs.forEach((subgraph, i) => this.filterSubgraph(subgraph, [...path, i]));
@@ -48,15 +47,18 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
     }
 
     getFilteredGraph = (): RootGraphModel => {
+        if (this.state.graphFilters.some(f => f[0] == 0 && f.length == 1)) {
+            return VizExplorer.parse("strict digraph {}");
+        }
         let graph = VizExplorer.parse(VizExplorer.toString(this.props.graph));
         this.filterSubgraph(graph, [0]);
         return graph;
     }
 
-    renderGraph = ():void => {
-        const renderElement = this.renderElement.current;
-        VizExplorer.renderGraph(renderElement, this.getFilteredGraph(), this.props.name);
-    };
+    // renderGraph = ():void => {
+    //     const renderElement = this.renderElement.current;
+    //     VizExplorer.renderGraph(renderElement, this.getFilteredGraph(), this.props.name);
+    // };
 
     handleFilter = (newFilter:number[], remove:boolean):void => {
         let filter = [0, ...newFilter];
@@ -73,7 +75,6 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
     }
 
     render(): React.ReactNode {
-        console.log(this.state.graphFilters);
         return (
             <div className="explorer">
                 <section className="main">
@@ -87,9 +88,10 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                             />
                         </ul>
                     </section>
-                    <section className="viewer">
+                    {/* <section className="viewer">
                         <div className="render" data-zoom-on-wheel="min-scale: 0.3; max-scale: 20;" data-pan-on-drag ref={this.renderElement}></div>
-                    </section>
+                    </section> */}
+                    <GraphViewer graph={this.getFilteredGraph()} />
                 </section>
                 <section className="status">
                     File: <em>{this.props.name}</em>
