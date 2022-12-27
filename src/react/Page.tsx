@@ -22,7 +22,7 @@ class Page extends React.Component<{}, PageState> {
         this.pageElement = React.createRef();
     }
 
-    componentDidMount(): void {
+    async componentDidMount() {
         document.addEventListener('keydown', (e) => {
             if (e.key == "Shift") {
                 this.pageElement.current.classList.add("modifier");
@@ -33,6 +33,9 @@ class Page extends React.Component<{}, PageState> {
                 this.pageElement.current.classList.remove("modifier");
             }
         });
+
+        electronAPI.onThemeUpdated(this.handleThemeChange);
+        await this.handleThemeChange();
     }
 
     handleCloseTab = (tab:number, e:React.SyntheticEvent) => {
@@ -70,9 +73,23 @@ class Page extends React.Component<{}, PageState> {
         }
     };
 
+    async handleToggleTheme() {
+        await electronAPI.toggleDarkMode();
+    }
+
+    async handleThemeChange() {
+        let theme = await electronAPI.getNativeTheme();
+        document.head.querySelector("meta[name='color-scheme']").setAttribute("content", theme);
+    }
+
+
 
     render(): React.ReactNode {
-        return <div className={["page", this.state.modifier ? "modifier" : ""].join(" ")} ref={this.pageElement}>
+        return <div className="page" ref={this.pageElement}>
+            <button className="toggle-theme" onClick={this.handleToggleTheme}>
+                <span className="dark-theme-only">☼</span>
+                <span className="light-theme-only">☽</span>
+            </button>
             <ul className="tabs">
                 {this.state.files.map((file, i) =>
                     <li key={i} className={i == this.state.selectedTab ? "selected" : null} onClick={this.handleSelectTab.bind(this, i)}>
