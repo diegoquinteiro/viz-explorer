@@ -1,4 +1,4 @@
-import { toDot, fromDot, Node, RootGraphModel, RootGraph } from "ts-graphviz"
+import { toDot, fromDot, Node, RootGraphModel, RootGraph, GraphBaseModel, NodeRef } from "ts-graphviz"
 
 function parse(dot: string): RootGraphModel {
     return fromDot(dot);
@@ -22,7 +22,7 @@ async function toSVG(root: RootGraphModel): Promise<SVGSVGElement> {
 const VizExplorer = {
     parse,
     toString,
-    toSVG
+    toSVG,
 };
 
 export default VizExplorer;

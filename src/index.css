@@ -5,11 +5,11 @@ body {
   padding: 0;
   background-color: #333;
   color: #eee;
+  user-select: none;
 }
 
 svg {
   width: 100%;
-  height: 100%;
   height: auto;
 }
 
@@ -18,34 +18,88 @@ html, body {
   height: 100%;
 }
 
-body {
+body, #root, .page {
   display: flex;
   flex-direction: column;
-}
-
-#header {
-  width: auto;
-  display: flex;
-  flex-direction: row;
-  padding: 1rem;
-  box-shadow: 1px 1px 1px #333;
-}
-
-#header h1 {
-  display: flexbox;
   flex-grow: 2;
-  margin: 0 !important;
-}
-
-#header h1 {
-  margin: 1rem;
-}
-#header button {
-  margin-right: 1rem;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 
-#main {
+.tabs {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-left: 1rem;
+}
+.tabs li {
+  padding: 0.3rem 0.3rem 0.3rem 0.5rem;
+  margin-left: 0.2rem;
+  margin-top: 0.5rem;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+.tabs li.selected {
+  background-color: #222;
+  box-shadow: 1px 1px 2px 2px rgba(0,0,0, 0.1);
+}
+.tabs li:not(.selected):hover {
+  background-color: rgba(0,0,0, 0.1);
+}
+.tabs li .close {
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1rem;
+  margin-right: 0;
+  width: 1.2rem;
+  height: 1.2rem;
+  background: none;
+  border: none;
+  color: #ccc;
+  rotate: 45deg;
+  border-radius: 0.5rem;
+}
+.tabs li .open {
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #ccc;
+}
+.tabs li .close:hover {
+  background: rgba(255,255,255,0.1);
+}
+.tabContent {
+  display: none;
+}
+.tabContent.selected {
+  display: flex !important;
+  overflow: hidden;
+  flex-grow: 2;
+  max-height: 100%;
+}
+.empty {
+  display: flex;
+  overflow: hidden;
+  max-height: 100%;
+  flex-basis: 100%;
+  background-color: #222;
+  align-items: center;
+  justify-content: center;
+}
+.empty span {
+  color:rgba(200,200,200, 0.3);
+}
+.explorer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 2;
+  max-height: 100%;
+  overflow: hidden;
+}
+.main {
   display: flex;
   flex-direction: row;
   flex-grow: 2;
@@ -55,32 +109,30 @@ body {
   box-shadow: 1px 1px 1px #333;
 }
 
-#viewer {
-  display: flexbox;
+.viewer {
   flex-grow: 2;
 }
 
-#editor {
-  display: flexbox;
+.editor {
   font-weight: lighter;
   max-height: max-content;
   min-width: 20rem;
   overflow: auto;
-  padding: 1rem;
-  box-shadow: 1px 1px 1px #333;
+  border-right: 1px solid #333;
 }
 
-#editor ul {
+.editor ul {
   padding-left: 1rem;
   list-style: none;
 }
 
-#render {
+.render {
   width: 100%;
   height: 100%;
+  overflow: auto !important;
 }
 
-#status {
+.status {
   font-weight: lighter;
   padding: 0.3rem;
   box-shadow: 1px 1px 1px #333;
@@ -217,4 +269,13 @@ svg:has(.selected) .edge:not(.selected)  {
 
 .modifier svg:has(.selected) .edge.highlight:not(.selected) {
   opacity: 0.5;
+}
+
+.subgraph.disabled .label {
+  opacity: 0.3;
+}
+
+.path:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
