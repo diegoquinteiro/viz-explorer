@@ -1,4 +1,5 @@
 import './theme/dark.scss';
+import './theme/light.scss';
 import 'svg-pan-zoom-container'
 import Page from "./react/Page";
 import React from 'react';

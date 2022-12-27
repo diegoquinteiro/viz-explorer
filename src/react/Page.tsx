@@ -70,9 +70,19 @@ class Page extends React.Component<{}, PageState> {
         }
     };
 
+    handleToggleTheme = () => {
+        document.body.classList.toggle("dark");
+        document.body.classList.toggle("light");
+        document.head.querySelector("meta[name='color-scheme']").setAttribute("content", document.body.className);
+    }
+
 
     render(): React.ReactNode {
         return <div className={["page", this.state.modifier ? "modifier" : ""].join(" ")} ref={this.pageElement}>
+            <button className="toggle-theme" onClick={this.handleToggleTheme}>
+                <span className="dark-theme-only">☼</span>
+                <span className="light-theme-only">☽</span>
+            </button>
             <ul className="tabs">
                 {this.state.files.map((file, i) =>
                     <li key={i} className={i == this.state.selectedTab ? "selected" : null} onClick={this.handleSelectTab.bind(this, i)}>
