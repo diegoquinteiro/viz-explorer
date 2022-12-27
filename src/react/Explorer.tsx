@@ -1,17 +1,19 @@
 import React from "react";
 import electronAPI from "../api/electron-api";
-import { GraphBaseModel, RootGraph, RootGraphModel } from "ts-graphviz";
+import { graph, GraphBaseModel, RootGraph, RootGraphModel } from "ts-graphviz";
 import VizExplorer from "../viz/viz-explorer";
 import GraphViewer from "./GraphViewer";
 import { Subgraph } from "./Subgraph";
+import Editor from "./Editor";
+import FileDescription from "../util/FileDescription";
 
 type ExplorerProps = {
-    graph: RootGraphModel,
-    path: string,
+    file: FileDescription
 }
 
 type ExplorerState = {
-    graphFilters: number[][]
+    graphFilters: number[][],
+    graphCode: string
 }
 
 class Explorer extends React.Component<ExplorerProps, ExplorerState> {
@@ -27,6 +29,7 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
 
         this.state = {
             graphFilters: [],
+            graphCode: props.file.contents,
         }
     }
 
@@ -43,7 +46,7 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         if (this.state.graphFilters.some(f => f[0] == 0 && f.length == 1)) {
             return VizExplorer.parse("strict digraph {}");
         }
-        let graph = VizExplorer.parse(VizExplorer.toString(this.props.graph));
+        let graph = VizExplorer.parse(this.state.graphCode);
         this.filterSubgraph(graph, [0]);
         return graph;
     }
@@ -62,6 +65,18 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         }
     }
 
+    handleCodeChange = (code: string) => {
+        try {
+            VizExplorer.parse(code);
+            this.setState({
+                graphCode: code
+            });
+        }
+        catch (e) {
+            // Nothing
+        }
+    }
+
     render(): React.ReactNode {
         return (
             <div className="explorer">
@@ -69,17 +84,18 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                     <section className="editor">
                         <ul>
                             <Subgraph
-                                graph={this.props.graph}
+                                graph={VizExplorer.parse(this.state.graphCode)}
                                 filteredOut={this.state.graphFilters.some(f => f[0] == 0 && f.length == 1)}
                                 graphFilters={this.state.graphFilters.filter(f => f[0] == 0 && f.length > 1).map(f => f.slice(1))}
                                 onFilter={this.handleFilter}
                             />
                         </ul>
+                        <Editor code={this.state.graphCode} onChange={this.handleCodeChange} />
                     </section>
                     <GraphViewer graph={this.getFilteredGraph()} />
                 </section>
                 <section className="status">
-                    File: <em className="path" onClick={electronAPI.openFolder.bind(this, this.props.path)}>{this.props.path}</em>
+                    File: <em className="path" onClick={electronAPI.openFolder.bind(this, this.props.file.path)}>{this.props.file.path}</em>
                 </section>
             </div>
         );
