@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell, nativeTheme } from 'electron';
 import { readFileSync } from 'fs';
 import path from 'path';
 import FileDescription from './util/FileDescription';
@@ -50,8 +50,9 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  nativeTheme.addListener("updated", () => {
+    mainWindow.webContents.send("theme-updated");
+  });
 };
 
 // This method will be called when Electron has finished
@@ -60,6 +61,17 @@ const createWindow = (): void => {
 app.on('ready', () => {
   ipcMain.handle('dialog:openFile', handleOpenFile);
   ipcMain.handle('shell:openFolder', handleOpenFolder);
+  ipcMain.handle('dark-mode:toggle', () => {
+    if (nativeTheme.shouldUseDarkColors) {
+      nativeTheme.themeSource = 'light'
+    } else {
+      nativeTheme.themeSource = 'dark'
+    }
+    return nativeTheme.shouldUseDarkColors ? "dark" : "light";
+  });
+  ipcMain.handle('native-theme:get', () => {
+    return nativeTheme.shouldUseDarkColors ? "dark" : "light";
+  });
   createWindow();
 });
 
