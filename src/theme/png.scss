@@ -1,0 +1,22 @@
+$backdrop: #ffffff;
+$primary: #345;
+$background: #eee;
+$secondary: #377;
+$secondary-foreground: #5999;
+$terciary: #337;
+$terciary-foreground: #3379;
+$accent: #939;
+$darken: rgba(200, 200, 255, 0.1);
+$lighten: rgba(0, 30, 50, 0.12);
+
+.png {
+	svg {
+		position: fixed;
+		width: auto;
+		height: auto;
+		top: 0;
+		left: 0;
+		background-color: white;
+	}
+	@import "svg.scss";
+}

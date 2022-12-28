@@ -9,9 +9,14 @@ $accent: #0ff;
 $darken: rgba(0, 0, 0, 0.1);
 $lighten: rgba(255, 255, 255, 0.1);
 
+@media (prefers-color-scheme: dark) {
+	.light-theme-only {
+		display: none;
+	}
+	.dark-theme-only {
+		display: block !important;
+		color: $primary;
+	}
 
-.light-theme-only {
-	display: none;
+	@import "base.scss";
 }
-
-@import "base.scss";

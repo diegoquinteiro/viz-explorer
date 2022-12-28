@@ -2,7 +2,7 @@ import React, { ComponentType } from "react"
 import VizExplorer from "../viz/viz-explorer"
 import { RootGraphModel } from "ts-graphviz"
 import Async from 'react-async';
-import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-container';
+import domtoimage from 'dom-to-image';
 import { getScaleAndOffset, setScaleAndOffset } from '../util/svg-pan-zoom-utils'
 
 type GraphViewerProps = {
@@ -163,6 +163,26 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
         return false;
     }
 
+    handleSave = () => {
+        this.svgContainer.current.classList.add("png");
+        const svg = this.svgContainer.current.firstChild as SVGSVGElement;
+        domtoimage.toPng(svg, {
+            style: {
+                width: svg.getAttribute("width"),
+                height: svg.getAttribute("height"),
+                position: "fixed",
+                top: "0",
+                left: "0",
+            }
+        }).then((image) => {
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'graph.png';
+            link.click();
+            this.svgContainer.current.classList.remove("png");
+        });
+    }
+
     render(): React.ReactNode {
         const renderSVG = async (): Promise<SVGSVGElement> => {
             return await VizExplorer.toSVG(this.props.graph);
@@ -170,6 +190,7 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
 
         return (
             <section className="viewer">
+                <a className="save" onClick={this.handleSave}>💾 Save as PNG</a>
                 <Async fallback={<div>Loading...</div>} promiseFn={renderSVG} onResolve={this.makeInteractive}>
                     {({ data, error, isPending }) => {
                         if (isPending) return "Loading...";
