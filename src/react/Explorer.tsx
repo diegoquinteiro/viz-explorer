@@ -12,7 +12,7 @@ type ExplorerProps = {
 }
 
 type ExplorerState = {
-    graphFilters: number[][],
+    graphFilters: string[][],
     graphCode: string
 }
 
@@ -33,26 +33,30 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         }
     }
 
-    filterSubgraph = (subgraph:GraphBaseModel, path:number[]): GraphBaseModel => {
-        subgraph.subgraphs.forEach((subgraph, i) => this.filterSubgraph(subgraph, [...path, i]));
+    filterSubgraph = (subgraph:GraphBaseModel, path:string[]): GraphBaseModel => {
+        console.log(path, this.state.graphFilters);
+        subgraph.subgraphs.forEach((sub) => this.filterSubgraph(sub, [...path, sub.id]));
+
         this.state.graphFilters
             .filter((filter) => filter.length == path.length + 1 && filter.slice(0, path.length).every((val, i) => val == path[i]))
-            .map(filter => subgraph.subgraphs[filter[filter.length - 1]])
+            .map(filter => subgraph.subgraphs.find(s => s.id == filter[filter.length - 1]))
             .forEach(filteredOut => subgraph.removeSubgraph(filteredOut));
+
         return subgraph;
     }
 
     getFilteredGraph = (): RootGraphModel => {
-        if (this.state.graphFilters.some(f => f[0] == 0 && f.length == 1)) {
+        if (this.state.graphFilters.some(f => f[0] == "root" && f.length == 1)) {
             return VizExplorer.parse("strict digraph {}");
         }
         let graph = VizExplorer.parse(this.state.graphCode);
-        this.filterSubgraph(graph, [0]);
+        this.filterSubgraph(graph, ["root"]);
         return graph;
     }
 
-    handleFilter = (newFilter:number[], remove:boolean):void => {
-        let filter = [0, ...newFilter];
+    handleFilter = (newFilter:string[], remove:boolean):void => {
+        let filter = ["root", ...newFilter];
+        console.log(filter);
         if (remove) {
             this.setState((state, props) => ({
                 graphFilters: state.graphFilters.filter(f => !f.every((val, i) => val == filter[i]))
@@ -85,8 +89,8 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                         <ul>
                             <Subgraph
                                 graph={VizExplorer.parse(this.state.graphCode)}
-                                filteredOut={this.state.graphFilters.some(f => f[0] == 0 && f.length == 1)}
-                                graphFilters={this.state.graphFilters.filter(f => f[0] == 0 && f.length > 1).map(f => f.slice(1))}
+                                filteredOut={this.state.graphFilters.some(f => f[0] == "root" && f.length == 1)}
+                                graphFilters={this.state.graphFilters.filter(f => f[0] == "root" && f.length > 1).map(f => f.slice(1))}
                                 onFilter={this.handleFilter}
                             />
                         </ul>

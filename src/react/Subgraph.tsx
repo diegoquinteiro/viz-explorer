@@ -4,14 +4,14 @@ import { GraphBaseModel } from "ts-graphviz";
 type SubgraphProps = {
     graph: GraphBaseModel,
     filteredOut?: boolean,
-    graphFilters: number[][],
-    onFilter: (filter:number[], remove:boolean) => void,
+    graphFilters: string[][],
+    onFilter: (filter:string[], remove:boolean) => void,
     disabled?: boolean
 };
 export class Subgraph extends React.Component<SubgraphProps> {
 
-    handleFilter = (i:number, filter:number[], remove:boolean) => {
-        this.props.onFilter([i, ...filter], remove);
+    handleFilter = (id:string, filter:string[], remove:boolean) => {
+        this.props.onFilter([id, ...filter], remove);
     };
 
     handleOnChange = (e:SyntheticEvent) => {
@@ -33,9 +33,9 @@ export class Subgraph extends React.Component<SubgraphProps> {
                         <Subgraph
                             key={i}
                             graph={graph}
-                            filteredOut={this.props.graphFilters.some(f => f[0] == i && f.length == 1)}
-                            graphFilters={this.props.graphFilters.filter(f => f[0] == i && f.length > 1).map(f => f.slice(1))}
-                            onFilter={this.handleFilter.bind(this, i)}
+                            filteredOut={this.props.graphFilters.some(f => f[0] == graph.id && f.length == 1)}
+                            graphFilters={this.props.graphFilters.filter(f => f[0] == graph.id && f.length > 1).map(f => f.slice(1))}
+                            onFilter={this.handleFilter.bind(this, graph.id)}
                             disabled={this.props.disabled || this.props.filteredOut}
                         />
                 )}
