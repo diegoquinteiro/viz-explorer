@@ -167,24 +167,16 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
     handleSave = () => {
         const svgWidth = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("width");
         const svgHeight = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("height");
-        const containerWidth = this.svgContainer.current.parentElement.offsetWidth;
-        const containerHeight = this.svgContainer.current.parentElement.offsetHeight;
-        this.svgContainer.current.parentElement.setAttribute("style", `
-            max-width: ${containerWidth}px;
-            max-height: ${containerHeight}px;
-            min-width: ${containerWidth}px;
-            min-height: ${containerHeight}px;
-        `)
-        this.svgContainer.current.classList.add("png");
-        this.svgContainer.current.setAttribute("style", `width: ${svgWidth}; height: ${svgHeight};`)
-        html2canvas(this.svgContainer.current).then((image) => {
+        const clone = this.svgContainer.current.cloneNode(true) as HTMLElement;
+        clone.classList.add("png");
+        clone.setAttribute("style", `width: ${svgWidth}; height: ${svgHeight};`);
+        this.svgContainer.current.parentElement.appendChild(clone);
+        html2canvas(clone).then((image) => {
             const link = document.createElement('a');
             link.href = image.toDataURL();
             link.download = 'graph.png';
             link.click();
-            this.svgContainer.current.classList.remove("png");
-            this.svgContainer.current.setAttribute("style", "");
-            this.svgContainer.current.parentElement.setAttribute("style", "");
+            clone.remove();
         });
     }
 
