@@ -3,6 +3,7 @@ import VizExplorer from "../viz/viz-explorer"
 import { RootGraphModel } from "ts-graphviz"
 import Async from 'react-async';
 import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas';
 import { getScaleAndOffset, setScaleAndOffset } from '../util/svg-pan-zoom-utils'
 
 type GraphViewerProps = {
@@ -164,22 +165,26 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
     }
 
     handleSave = () => {
+        const svgWidth = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("width");
+        const svgHeight = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("height");
+        const containerWidth = this.svgContainer.current.parentElement.offsetWidth;
+        const containerHeight = this.svgContainer.current.parentElement.offsetHeight;
+        this.svgContainer.current.parentElement.setAttribute("style", `
+            max-width: ${containerWidth}px;
+            max-height: ${containerHeight}px;
+            min-width: ${containerWidth}px;
+            min-height: ${containerHeight}px;
+        `)
         this.svgContainer.current.classList.add("png");
-        const svg = this.svgContainer.current.firstChild as SVGSVGElement;
-        domtoimage.toPng(svg, {
-            style: {
-                width: svg.getAttribute("width"),
-                height: svg.getAttribute("height"),
-                position: "fixed",
-                top: "0",
-                left: "0",
-            }
-        }).then((image) => {
+        this.svgContainer.current.setAttribute("style", `width: ${svgWidth}; height: ${svgHeight};`)
+        html2canvas(this.svgContainer.current).then((image) => {
             const link = document.createElement('a');
-            link.href = image;
+            link.href = image.toDataURL();
             link.download = 'graph.png';
             link.click();
             this.svgContainer.current.classList.remove("png");
+            this.svgContainer.current.setAttribute("style", "");
+            this.svgContainer.current.parentElement.setAttribute("style", "");
         });
     }
 

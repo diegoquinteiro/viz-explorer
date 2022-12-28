@@ -10,13 +10,15 @@ $darken: rgba(200, 200, 255, 0.1);
 $lighten: rgba(0, 30, 50, 0.12);
 
 .png {
-	svg {
+	&.render {
 		position: fixed;
+		left: 100%;
+		background-color: white;
+	}
+
+	&.render svg{
 		width: auto;
 		height: auto;
-		top: 0;
-		left: 0;
-		background-color: white;
 	}
 	@import "svg.scss";
 }
