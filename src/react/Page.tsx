@@ -103,7 +103,7 @@ class Page extends React.Component<{}, PageState> {
             </ul>
             {this.state.files.map((file, i) =>
                 <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}>
-                    <Explorer graph={VizExplorer.parse(file.contents)} path={file.path} />
+                    <Explorer file={file} />
                 </div>
             )}
             {this.state.files.length == 0 ? <div className="empty"><span>No graph open</span></div>: null}
