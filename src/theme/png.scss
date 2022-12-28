@@ -3,9 +3,13 @@ $primary: #345;
 $background: #eee;
 $secondary: #377;
 $secondary-foreground: #5999;
+$secondary-foreground-opaque: color-mix(in srgb, $secondary 60%, $backdrop);
 $terciary: #337;
 $terciary-foreground: #3379;
+$terciary-foreground-opaque: color-mix(in srgb, $terciary 60%, $backdrop);
 $accent: #939;
+$darken-opaque: color-mix(in srgb, rgb(200, 200, 255) 10%, $backdrop);
+$lighten-opaque: color-mix(in srgb, rgb(0, 30, 50) 12%, $backdrop);
 $darken: rgba(200, 200, 255, 0.1);
 $lighten: rgba(0, 30, 50, 0.12);
 
@@ -13,12 +17,40 @@ $lighten: rgba(0, 30, 50, 0.12);
 	&.render {
 		position: fixed;
 		left: 100%;
-		background-color: white;
+		background-color: $backdrop;
 	}
 
 	&.render svg{
 		width: auto;
 		height: auto;
 	}
+
 	@import "svg.scss";
+
+	svg .node>ellipse {
+		fill: $lighten-opaque !important;
+	}
+
+	svg .edge>path,
+	svg .edge>polygon {
+		stroke: $lighten-opaque !important;
+	}
+
+	svg .edge>polygon {
+		fill: $lighten-opaque !important;
+	}
+
+	svg .edge.selected>path,
+	svg .edge.selected>polygon {
+		stroke: $terciary-foreground-opaque !important;
+	}
+
+	svg .edge.selected>polygon {
+		fill: $terciary-foreground-opaque !important;
+	}
+
+	svg .cluster>polygon {
+		fill: $lighten-opaque !important;
+	}
+
 }

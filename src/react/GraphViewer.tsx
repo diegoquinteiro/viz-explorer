@@ -171,7 +171,10 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
         clone.classList.add("png");
         clone.setAttribute("style", `width: ${svgWidth}; height: ${svgHeight};`);
         this.svgContainer.current.parentElement.appendChild(clone);
-        html2canvas(clone).then((image) => {
+        html2canvas(clone, {
+            backgroundColor: null,
+            scale: 4,
+        }).then((image) => {
             const link = document.createElement('a');
             link.href = image.toDataURL();
             link.download = 'graph.png';
