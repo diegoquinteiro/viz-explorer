@@ -6,6 +6,7 @@ import GraphViewer from "./GraphViewer";
 import { Subgraph } from "./Subgraph";
 import Editor from "./Editor";
 import FileDescription from "../util/FileDescription";
+import Gutter from "./Gutter";
 
 type ExplorerProps = {
     file: FileDescription
@@ -17,16 +18,11 @@ type ExplorerState = {
 }
 
 class Explorer extends React.Component<ExplorerProps, ExplorerState> {
-    filePathElement: React.RefObject<HTMLElement>;
-    fileContentsElement: React.RefObject<HTMLDivElement>;
-    renderElement: React.RefObject<HTMLDivElement>;
+    rootElement: React.RefObject<HTMLElement>;
 
     constructor(props:ExplorerProps) {
         super(props);
-        this.filePathElement = React.createRef();
-        this.fileContentsElement = React.createRef();
-        this.renderElement = React.createRef();
-
+        this.rootElement = React.createRef();
         this.state = {
             graphFilters: [],
             graphCode: props.file.contents,
@@ -34,7 +30,6 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
     }
 
     filterSubgraph = (subgraph:GraphBaseModel, path:string[]): GraphBaseModel => {
-        console.log(path, this.state.graphFilters);
         subgraph.subgraphs.forEach((sub) => this.filterSubgraph(sub, [...path, sub.id]));
 
         this.state.graphFilters
@@ -56,7 +51,6 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
 
     handleFilter = (newFilter:string[], remove:boolean):void => {
         let filter = ["root", ...newFilter];
-        console.log(filter);
         if (remove) {
             this.setState((state, props) => ({
                 graphFilters: state.graphFilters.filter(f => !f.every((val, i) => val == filter[i]))
@@ -75,17 +69,22 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
             this.setState({
                 graphCode: code
             });
+            this.rootElement.current.classList.remove("error");
         }
         catch (e) {
-            // Nothing
+            this.rootElement.current.classList.add("error");
         }
     }
 
     render(): React.ReactNode {
         return (
-            <div className="explorer">
+            <div className="explorer" ref={this.rootElement}>
                 <section className="main">
-                    <section className="editor">
+                    <Editor code={this.state.graphCode} onChange={this.handleCodeChange} />
+                    <Gutter />
+                    <GraphViewer graph={this.getFilteredGraph()} />
+                    <Gutter right />
+                    <section className="outline">
                         <ul>
                             <Subgraph
                                 graph={VizExplorer.parse(this.state.graphCode)}
@@ -94,9 +93,7 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                                 onFilter={this.handleFilter}
                             />
                         </ul>
-                        <Editor code={this.state.graphCode} onChange={this.handleCodeChange} />
                     </section>
-                    <GraphViewer graph={this.getFilteredGraph()} />
                 </section>
                 <section className="status">
                     File: <em className="path" onClick={electronAPI.openFolder.bind(this, this.props.file.path)}>{this.props.file.path}</em>

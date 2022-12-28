@@ -2,7 +2,8 @@ import React, { ComponentType } from "react"
 import VizExplorer from "../viz/viz-explorer"
 import { RootGraphModel } from "ts-graphviz"
 import Async from 'react-async';
-import { stat } from "fs";
+import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-container';
+import { getScaleAndOffset, setScaleAndOffset } from '../util/svg-pan-zoom-utils'
 
 type GraphViewerProps = {
     graph: RootGraphModel
@@ -12,11 +13,13 @@ type GraphViewerState = {
     selectedNodes: Set<string>,
     modifier?: boolean,
 }
+type Snapshot = [number, number, number];
 
 class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
 
     svgContainer: React.RefObject<HTMLDivElement>;
     selectedNodes: string[];
+    snapshot?: Snapshot;
 
     constructor(props:GraphViewerProps) {
         super(props);
@@ -40,6 +43,8 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
     }
 
     makeInteractive = (): void => {
+        if (this.snapshot)
+            setScaleAndOffset(this.svgContainer.current, this.svgContainer.current.firstChild as SVGSVGElement, ...this.snapshot);
         this.handleCancelActions();
         this.highlightSelected();
 
@@ -152,6 +157,7 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
     }
 
     shouldComponentUpdate(nextProps: Readonly<GraphViewerProps>, nextState: Readonly<GraphViewerState>, nextContext: any): boolean {
+        this.snapshot = getScaleAndOffset(this.svgContainer.current, this.svgContainer.current.firstChild as SVGSVGElement);
         if (nextProps.graph != this.props.graph) return true;
         return false;
     }

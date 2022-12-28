@@ -129,27 +129,79 @@ svg {
 	display: flex;
 	flex-direction: row;
 	flex-grow: 2;
-	background-color: $backdrop;
-	max-width: 100%;
 	overflow: hidden;
+	background-color: $backdrop;
 	box-shadow: 1px 1px 1px $background;
 }
 
+.gutter {
+	display: flex;
+	flex-grow: 0;
+	flex-shrink: 0;
+	height: 100%;
+	width: 0.5rem;
+	background-color: $background;
+	transition-property: width;
+	transition-duration: 0.5s;
+	transition-delay: 0;
+}
+.gutter:hover {
+	background-color: $lighten;
+	width: 1rem;
+	cursor: col-resize;
+	animation: normal;
+	transition-property: width;
+	transition-duration: 0.5s;
+	transition-delay: 0;
+}
+.gutter.collapsed {
+	width: 1rem;
+	animation: normal;
+	transition-property: width;
+	transition-duration: 0.5s;
+	transition-delay: 0;
+}
+.gutter.collapsed:hover {
+	width: 2rem;
+}
 .viewer {
-	flex-grow: 2;
+	display: flex;
+	flex-grow: 1;
+	overflow: auto;
+}
+.error .viewer,
+.error .outline {
+	filter: blur(10px);
+	opacity: 0.5;
 }
 
 .editor {
-	font-weight: lighter;
-	max-height: max-content;
-	min-width: 20rem;
+	display: flex;
+	flex-grow: 1;
 	overflow: auto;
+	height: 100%;
+	min-width: 20rem;
 	border-right: 1px solid $lighten;
 }
+.editor > div {
+	display: flex;
+	flex-grow: 1;
+	background-color: --vscode-background !important;
+}
+.outline {
+	background-color: $darken;
+	display: flex;
+	font-weight: lighter;
+	flex-grow: 1;
+	min-width: 20rem;
+	overflow: auto;
+	border-left: 1px solid $lighten;
+}
 
-.editor ul {
+.outline ul {
 	padding-left: 1rem;
 	list-style: none;
+	white-space: nowrap;
 }
 
 .render {

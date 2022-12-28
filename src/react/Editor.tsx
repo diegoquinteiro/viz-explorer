@@ -1,7 +1,9 @@
 import React from "react";
-import MonacoEditor from "react-monaco-editor";
+import MonacoEditor, { monaco } from "react-monaco-editor";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import DOTLanguage from "../util/DOTLanguage";
+import electronAPI from "../api/electron-api";
+import { ResponsiveMonacoEditor } from "responsive-react-monaco-editor";
 
 type EditorProps = {
     code: string,
@@ -9,24 +11,38 @@ type EditorProps = {
 }
 
 class Editor extends React.Component<EditorProps> {
-    editorDidMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) => {
-        let keywords = ["strict", "graph", "digraph", ]
+    async editorDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) {
         monaco.languages.register({ id: "dot" });
         monaco.languages.setMonarchTokensProvider("dot", DOTLanguage.tokenProvider);
+        electronAPI.onThemeUpdated(this.handleThemeChange.bind(this, monaco));
+        await this.handleThemeChange(monaco);
+    }
+    async handleThemeChange(editor:typeof monacoEditor) {
+        let theme = await electronAPI.getNativeTheme();
+        if (theme == 'dark') {
+            monaco.editor.setTheme("vs-dark");
+        }
+        else {
+            monaco.editor.setTheme("vs-light");
+        }
     }
     render(): React.ReactNode {
-        return (
-            <MonacoEditor
-                width="800"
-                height="100%"
+        return <section className="editor">
+            <div>
+            <ResponsiveMonacoEditor
                 language="dot"
                 theme="vs-dark"
                 value={this.props.code}
-                options={}
+                options={{
+                    minimap: {
+                        enabled: false,
+                    }
+                }}
                 onChange={this.props.onChange}
-                editorDidMount={this.editorDidMount}
+                editorDidMount={this.editorDidMount.bind(this)}
             />
-        );
+            </div>
+        </section>;
     }
 }
 
