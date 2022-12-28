@@ -43,8 +43,9 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
     }
 
     makeInteractive = (): void => {
-        if (this.snapshot)
+        if (this.snapshot) {
             setScaleAndOffset(this.svgContainer.current, this.svgContainer.current.firstChild as SVGSVGElement, ...this.snapshot);
+        }
         this.handleCancelActions();
         this.highlightSelected();
 

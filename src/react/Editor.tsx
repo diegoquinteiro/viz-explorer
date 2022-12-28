@@ -26,6 +26,9 @@ class Editor extends React.Component<EditorProps> {
             monaco.editor.setTheme("vs-light");
         }
     }
+    shouldComponentUpdate(nextProps: Readonly<EditorProps>, nextState: Readonly<{}>, nextContext: any): boolean {
+        return false;
+    }
     render(): React.ReactNode {
         return <section className="editor">
             <div>
