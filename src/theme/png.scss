@@ -1,43 +1,36 @@
-$backdrop: #ffffff;
-$primary: #789;
+$backdrop: #fffffe;
+$primary: #333;
 $background: #eee;
-$secondary: #7aa;
-$secondary-foreground: #7aa;
-$terciary: #77a;
-$terciary-foreground: #77a;
-$accent: #939;
-$darken: #333;
-$lighten: rgba(127,127,127, 0.1);
+$background-light: #f9f9f9;
+$secondary: #36b;
+$secondary-foreground: #36b9;
+$terciary: #3bb;
+$terciary-foreground: #3bb9;
+$accent: #f33;
+$darken: rgba(70, 70, 70, 0.1);
+$lighten: rgba(160, 160, 160, 0.12);
 
 
 .png {
 	&.render {
 		position: fixed;
 		left: 100%;
+		background-color: #fff;
 
 		svg{
 			width: auto !important;
 			height: auto !important;
 			position: relative;
+			font-weight: normal !important;
 		}
 	}
 
 	@import "svg.scss";
 
-	* {
-		font-weight: normal !important;
-	}
-
 	svg .node>ellipse {
-		stroke: $primary;
+		fill: $background-light;
 	}
-
-	svg .edge>path,
-	svg .edge>polygon {
-		stroke: $secondary-foreground;
-	}
-
 	svg .cluster>polygon {
-		stroke: $terciary;
+		fill: $lighten;
 	}
 }

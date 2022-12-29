@@ -1,7 +1,6 @@
 svg text {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
 		Arial, sans-serif !important;
-	font-weight: lighter;
 }
 
 svg .cluster:hover,
@@ -98,9 +97,17 @@ svg .cluster>polygon {
 
 svg:has(.selected) .cluster:not(.selected),
 svg:has(.selected) .node:not(.selected):not(.highlight) {
-	opacity: 0.3;
+	opacity: 0.4;
 }
 
 svg:has(.selected) .edge:not(.selected) {
 	opacity: 0;
+}
+svg .node>ellipse {
+	stroke: $lighten;
+	filter: drop-shadow(1px 1px 1px $darken);
+}
+svg .cluster>polygon {
+	stroke: $lighten;
+	filter: drop-shadow(1px 1px 1px $darken);
 }

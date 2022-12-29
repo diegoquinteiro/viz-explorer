@@ -182,7 +182,6 @@ svg {
 	overflow: auto;
 	height: 100%;
 	min-width: 20rem;
-	border-right: 1px solid $lighten;
 }
 .editor > div {
 	display: flex;
@@ -190,13 +189,11 @@ svg {
 	background-color: --vscode-background !important;
 }
 .outline {
-	background-color: $darken;
+	background-color: $background-light;
 	display: flex;
-	font-weight: lighter;
 	flex-grow: 1;
 	min-width: 20rem;
 	overflow: auto;
-	border-left: 1px solid $lighten;
 }
 
 .outline ul {
@@ -238,7 +235,6 @@ svg {
 }
 
 .status {
-	font-weight: lighter;
 	padding: 0.3rem;
 	box-shadow: 1px 1px 1px $background;
 }
@@ -281,8 +277,8 @@ svg {
 	@import "svg.scss";
 }
 .modifier svg:has(.selected) .edge.highlight:not(.selected) {
-	opacity: 0.5 !important;
+	opacity: 1 !important;
 }
 .modifier svg:has(.selected) .edge:not(.selected) {
-	opacity: 0.1 !important;
+	opacity: 0.2 !important;
 }
