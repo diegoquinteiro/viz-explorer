@@ -86,6 +86,15 @@ svg .edge.selected>polygon {
 	fill: $terciary-foreground;
 }
 
+svg .edge.selected>text {
+	fill: $secondary-foreground;
+}
+
+svg .edge>text {
+	fill: $lighten;
+}
+
+
 svg .cluster {
 	fill: $primary;
 }
