@@ -4,6 +4,7 @@ import FileDescription from "../util/FileDescription";
 import Explorer from "./Explorer";
 import VizExplorer from "../viz/viz-explorer";
 import sampleFile from "../viz/sample-file";
+import emptyFile from "../viz/empty-file";
 
 type PageState = {
    files: FileDescription[],
@@ -16,13 +17,13 @@ class Page extends React.Component<{}, PageState> {
     constructor(props: {}) {
         super(props);
         this.state = {
-            files: [sampleFile],
+            files: [emptyFile],
             selectedTab: 0
         }
         this.pageElement = React.createRef();
     }
 
-    async componentDidMount() {
+    componentDidMount = async () => {
         document.addEventListener('keydown', (e) => {
             if (e.key == "Shift") {
                 this.pageElement.current.classList.add("modifier");
@@ -35,12 +36,40 @@ class Page extends React.Component<{}, PageState> {
         });
 
         electronAPI.onThemeUpdated(this.handleThemeChange);
+        electronAPI.onCloseTabRequested(() => {
+            this.closeTab(this.state.selectedTab);
+        });
+        electronAPI.onNextTabRequested(() => {
+            this.handleSelectTab((this.state.selectedTab + 1) % this.state.files.length);
+        });
+        electronAPI.onPreviousTabRequested(() => {
+            this.handleSelectTab((this.state.selectedTab + this.state.files.length - 1) % this.state.files.length);
+        });
+        electronAPI.onOpenRequested(this.openFile);
+        electronAPI.onNewRequested(this.newFile);
         await this.handleThemeChange();
     }
 
     handleCloseTab = (tab:number, e:React.SyntheticEvent) => {
+        this.closeTab(tab);
+        e.stopPropagation();
+    };
+
+    closeTab = (tab:number) => {
+        if (this.state.files[tab].changed) {
+            let sure = false;
+            if (this.state.files[tab].path)
+                sure = confirm(`Discard changes to "${this.state.files[tab].path.replace(/^.*[\\\/]/, '')}?`);
+            else
+                sure = confirm(`Discard changes?`);
+
+            if (!sure) return;
+        }
         this.setState((state, props) => {
             let selectedTab = state.selectedTab;
+            if (state.files.length == 1) {
+                window.close();
+            }
             if (selectedTab >= tab) {
               selectedTab--;
             }
@@ -50,27 +79,50 @@ class Page extends React.Component<{}, PageState> {
                 files: state.files.filter((f, i) => i !== tab),
             }
         });
-        e.stopPropagation();
     };
 
     handleSelectTab = (tab:number) => {
         this.setState({
             selectedTab: tab,
+        }, () => {
+            window.dispatchEvent(new Event('resize'));
         });
     };
 
     handleOpenFileClick = async (e: React.SyntheticEvent) => {
+        await this.openFile();
+    };
+
+    openFile = async () => {
         const file = await electronAPI.openFile();
-        try {
-            VizExplorer.parse(file.contents);
+        if (!file) return;
+        if (this.state.files.find(f => f.path == file.path)) {
+            this.setState((state) => ({
+                selectedTab: state.files.indexOf(state.files.find(f => f.path == file.path))
+            }));
+            return;
+        }
+        if (this.state.files.length == 1 && this.state.files[0] == emptyFile) {
+            this.setState((state, props) => ({
+                selectedTab: 0,
+                files: [file],
+            }));
+        }
+        else {
             this.setState((state, props) => ({
                 selectedTab: state.files.length,
                 files: [...state.files, file],
             }));
         }
-        catch (e) {
-            alert("Invalid DOT file, please check the file.");
-        }
+    };
+
+    newFile = async () => {
+        let newFile = structuredClone(emptyFile);
+        newFile.id = "new" + Date.now();
+        this.setState((state, props) => ({
+            selectedTab: state.files.length,
+            files: [...state.files, newFile],
+        }));
     };
 
     async handleToggleTheme() {
@@ -82,6 +134,49 @@ class Page extends React.Component<{}, PageState> {
         document.head.querySelector("meta[name='color-scheme']").setAttribute("content", theme);
     }
 
+    handleFileChange = (file:FileDescription, code:string) => {
+        this.setState((state, props) => ({
+            files: state.files.map(f => {
+                if (file == f) {
+                    let clone = structuredClone(f);
+                    if (clone.contents != code) {
+                        clone.changed = true;
+                    }
+                    else {
+                        clone.changed = false;
+                    }
+                    return clone;
+                }
+                return f;
+            })
+        }));
+    };
+
+    handleSave = async (file:FileDescription, code:string) => {
+        // Save only current tab
+        if (this.state.files[this.state.selectedTab] != file) return;
+        const savedFile = await electronAPI.saveFile(file, code);
+        if (!savedFile) return;
+        this.setState((state, props) => ({
+            files: state.files.map(f => {
+                if (file == f) {
+                    return savedFile;
+                }
+                return f;
+            })
+        }));
+    };
+
+    handleSaveAs = async (file:FileDescription, code:string) => {
+        // Save only current tab
+        if (this.state.files[this.state.selectedTab] != file) return;
+        const savedFile = await electronAPI.saveFile(emptyFile, code);
+        if (!savedFile) return;
+        this.setState((state, props) => ({
+            files: [...state.files, savedFile],
+            selectedTab: state.files.length
+        }));
+    };
 
 
     render(): React.ReactNode {
@@ -92,18 +187,19 @@ class Page extends React.Component<{}, PageState> {
             </button>
             <ul className="tabs">
                 {this.state.files.map((file, i) =>
-                    <li key={i} className={i == this.state.selectedTab ? "selected" : null} onClick={this.handleSelectTab.bind(this, i)}>
-                        ❖ &nbsp;{file.path.replace(/^.*[\\\/]/, '')}
+                    <li key={i} className={[i == this.state.selectedTab ? "selected" : "", file.changed ? "changed" : ""].join(" ")} onClick={this.handleSelectTab.bind(this, i)}>
+                        ❖ <span className="filename">{file.path ? file.path.replace(/^.*[\\\/]/, '') : "(New file)"}</span>
                         <button className="close" onClick={this.handleCloseTab.bind(this, i)}>✚</button>
                     </li>
                 )}
-                <li>
-                    <button className="open" type="button" onClick={this.handleOpenFileClick}>📂 Open a file</button>
-                </li>
             </ul>
             {this.state.files.map((file, i) =>
                 <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}>
-                    <Explorer file={file} />
+                    <Explorer key={file.path + ("" + file.id)} file={file}
+                        onFileChange={this.handleFileChange.bind(this, file)}
+                        onSave={this.handleSave.bind(this, file)}
+                        onSaveAs={this.handleSaveAs.bind(this, file)} />
+
                 </div>
             )}
             {this.state.files.length == 0 ? <div className="empty"><span>No graph open</span></div>: null}

@@ -25,9 +25,9 @@ const sampleFile:FileDescription = {
     }
 
     subgraph MainFlow {
-        a -> d
-        b -> e
-        c -> f
+        a -> d [label="sample label"]
+        b -> e [label="another one"]
+        c -> f [label="one more"]
         subgraph BackFlow {
             d -> a
             e -> b

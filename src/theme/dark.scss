@@ -20,4 +20,8 @@ $lighten: rgba(255, 255, 255, 0.1);
 	}
 
 	@import "base.scss";
+
+	body {
+		font-weight: lighter;
+	}
 }

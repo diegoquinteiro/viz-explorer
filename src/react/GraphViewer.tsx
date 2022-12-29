@@ -2,9 +2,9 @@ import React, { ComponentType } from "react"
 import VizExplorer from "../viz/viz-explorer"
 import { RootGraphModel } from "ts-graphviz"
 import Async from 'react-async';
-import domtoimage from 'dom-to-image';
 import html2canvas from 'html2canvas';
 import { getScaleAndOffset, setScaleAndOffset } from '../util/svg-pan-zoom-utils'
+import electronAPI from "../api/electron-api";
 
 type GraphViewerProps = {
     graph: RootGraphModel
@@ -39,6 +39,11 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
         document.addEventListener('keyup', (e) => {
             if (e.key == "Shift") {
                 this.setState({ modifier: false });
+            }
+        });
+        electronAPI.onExportRequested(() => {
+            if (this.svgContainer.current?.offsetParent) {
+                this.handleExport();
             }
         });
     }
@@ -107,7 +112,11 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
         });
 
         svgContainer.addEventListener("click", (e) => {
-            if (["graph0", "render"].includes((e.target as SVGElement).parentElement.id) && !movedSinceDown) {
+            if (
+                ((e.target as SVGElement).parentElement.id == "graph0" || (e.target as SVGElement).parentElement.classList.contains("render"))
+                && !movedSinceDown
+                && !this.state.modifier
+            ) {
                 this.setState({
                     selectedNodes: new Set<string>()
                 }, this.highlightSelected);
@@ -164,7 +173,7 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
         return false;
     }
 
-    handleSave = () => {
+    handleExport = () => {
         const svgWidth = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("width");
         const svgHeight = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("height");
         const clone = this.svgContainer.current.cloneNode(true) as HTMLElement;
@@ -192,10 +201,10 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
 
         return (
             <section className="viewer">
-                <a className="save" onClick={this.handleSave}>💾 Save as PNG</a>
+                <a className="save" onClick={this.handleExport}>📷 Export as PNG</a>
                 <Async fallback={<div>Loading...</div>} promiseFn={renderSVG} onResolve={this.makeInteractive}>
                     {({ data, error, isPending }) => {
-                        if (isPending) return "Loading...";
+                        if (isPending) return <div className="render" />;
                         if (error) return `Something went wrong: ${error.message}`;
                         if (data) return <div
                                 className="render"

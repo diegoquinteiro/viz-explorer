@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain, dialog, shell, nativeTheme } from 'electron';
+import { app, Menu, BrowserWindow, ipcMain, dialog, shell, nativeTheme, screen, globalShortcut } from 'electron';
 import { readFileSync } from 'fs';
+import * as fs from 'fs';
 import path from 'path';
 import FileDescription from './util/FileDescription';
 
@@ -8,6 +9,8 @@ import FileDescription from './util/FileDescription';
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+
+app.name = "GraphViz Explorer";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -32,15 +35,39 @@ async function handleOpenFile(): Promise<FileDescription> {
   }
 }
 
+async function handleSaveFile(e:any, file:FileDescription, contents:string): Promise<FileDescription> {
+  let path = file.path;
+
+  if (!path) {
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      filters: [
+        { name: 'DOT files', extensions: ['dot'] },
+        { name: 'All Files', extensions: ['*'] },
+    ]});
+    if (canceled) return;
+    path = filePath;
+  }
+
+  fs.writeFileSync(path, contents);
+  return {
+    path: path,
+    contents: contents,
+    changed: false,
+  }
+}
+
 async function handleOpenFolder(e:any, item:string): Promise<string> {
   return shell.openPath(path.dirname(item));
 }
 
 const createWindow = (): void => {
   // Create the browser window.
+  const display = screen.getPrimaryDisplay();
+  const width = Math.round(display.bounds.width * 0.8);
+  const height = Math.round(display.bounds.height * 0.8);
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: height,
+    width: width,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: true,
@@ -53,6 +80,116 @@ const createWindow = (): void => {
   nativeTheme.addListener("updated", () => {
     mainWindow.webContents.send("theme-updated");
   });
+
+  const isMac = process.platform === 'darwin';
+  const template = [
+    ...(isMac ? [{
+      label: app.name,
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    }] : []),
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'New',
+          accelerator: 'CommandOrControl+N',
+          click() {
+            mainWindow.webContents.send("new-requested");
+          }
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: 'Open...',
+          accelerator: 'CommandOrControl+O',
+          click() {
+            mainWindow.webContents.send("open-requested");
+          }
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: 'Save',
+          accelerator: 'CommandOrControl+S',
+          click() {
+            mainWindow.webContents.send("save-requested");
+          }
+        },
+        {
+          label: 'Save As..',
+          accelerator: 'CommandOrControl+Shift+S',
+          click() {
+            mainWindow.webContents.send("save-as-requested");
+          }
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: 'Export as PNG...',
+          accelerator: 'CommandOrControl+E',
+          click() {
+            mainWindow.webContents.send("export-requested");
+          }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Close File',
+          accelerator: 'CommandOrControl+W',
+          click() {
+            mainWindow.webContents.send("close-tab-requested");
+          }
+        }
+      ]
+    },
+    { role: "editMenu" },
+    {
+      label: 'Window',
+      submenu: [
+        {
+          label: 'Next Tab',
+          accelerator: 'Control+Tab',
+          click() {
+            mainWindow.webContents.send("next-tab-requested");
+          }
+        },
+        {
+          label: 'Previous Tab',
+          accelerator: 'Control+Shift+Tab',
+          click() {
+            mainWindow.webContents.send("previous-tab-requested");
+          }
+        },
+        {
+          type: "separator"
+        },
+        {
+          label: 'Open DevTools',
+          accelerator: 'CommandOrControl+Alt+I',
+          click() {
+            mainWindow.webContents.openDevTools();
+          }
+        }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 };
 
 // This method will be called when Electron has finished
@@ -60,6 +197,7 @@ const createWindow = (): void => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   ipcMain.handle('dialog:openFile', handleOpenFile);
+  ipcMain.handle('dialog:saveFile', handleSaveFile);
   ipcMain.handle('shell:openFolder', handleOpenFolder);
   ipcMain.handle('dark-mode:toggle', () => {
     if (nativeTheme.shouldUseDarkColors) {

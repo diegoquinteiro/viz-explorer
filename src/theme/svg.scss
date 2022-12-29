@@ -22,7 +22,9 @@ svg .node {
 	fill: $terciary;
 }
 
-svg .node>ellipse {
+svg .node>ellipse,
+svg .node>path,
+svg .node>polygon, {
 	fill: $lighten;
 	stroke: none;
 }
@@ -32,7 +34,9 @@ svg .node:hover {
 	fill: $secondary-foreground;
 }
 
-svg .node:hover>ellipse {
+svg .node:hover>ellipse,
+svg .node:hover>path,
+svg .node:hover>polygon {
 	stroke: $secondary-foreground;
 }
 
@@ -40,7 +44,9 @@ svg .node.selected {
 	fill: $secondary;
 }
 
-svg .node.selected>ellipse {
+svg .node.selected>ellipse,
+svg .node.selected>path,
+svg .node.selected>polygon {
 	stroke: $secondary;
 }
 
@@ -48,7 +54,9 @@ svg .node.selected:hover {
 	fill: $secondary;
 }
 
-svg .node.selected:hover>ellipse {
+svg .node.selected:hover>ellipse,
+svg .node.selected:hover>path,
+svg .node.selected:hover>polygon {
 	stroke: $secondary;
 }
 
@@ -64,7 +72,9 @@ svg .node.highlight:hover {
 	fill: $secondary;
 }
 
-svg .node.highlight:hover>ellipse {
+svg .node.highlight:hover>ellipse
+svg .node.highlight:hover>path,
+svg .node.highlight:hover>polygon {
 	stroke: $secondary;
 }
 
@@ -86,6 +96,14 @@ svg .edge.selected>polygon {
 	fill: $terciary-foreground;
 }
 
+svg .edge.selected>text {
+	fill: $secondary-foreground;
+}
+
+svg .edge>text {
+	fill: $lighten;
+}
+
 svg .cluster {
 	fill: $primary;
 }
@@ -103,7 +121,9 @@ svg:has(.selected) .node:not(.selected):not(.highlight) {
 svg:has(.selected) .edge:not(.selected) {
 	opacity: 0;
 }
-svg .node>ellipse {
+svg .node>ellipse,
+svg .node>path,
+svg .node>polygon {
 	stroke: $lighten;
 	filter: drop-shadow(1px 1px 1px $darken);
 }
