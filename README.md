@@ -1,4 +1,4 @@
 # GraphViz Explorer
 A desktop app to visualize and explore GraphViz graphs.
 
-<img width="912" alt="Screen Shot 2022-12-27 at 14 58 19" src="https://user-images.githubusercontent.com/1878108/209704724-375a203c-2722-4587-b47c-27d3c5567e74.png">
+<img width="1648" alt="screenshot" src="https://user-images.githubusercontent.com/1878108/209918612-d0c960a5-ee61-4fbb-b818-eeb3d14e2863.png">
