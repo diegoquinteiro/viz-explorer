@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell, nativeTheme } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell, nativeTheme, screen } from 'electron';
 import { readFileSync } from 'fs';
 import path from 'path';
 import FileDescription from './util/FileDescription';
@@ -38,9 +38,12 @@ async function handleOpenFolder(e:any, item:string): Promise<string> {
 
 const createWindow = (): void => {
   // Create the browser window.
+  const display = screen.getPrimaryDisplay();
+  const width = Math.round(display.bounds.width * 0.8);
+  const height = Math.round(display.bounds.height * 0.8);
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: height,
+    width: width,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: true,
