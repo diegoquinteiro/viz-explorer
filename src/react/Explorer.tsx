@@ -84,14 +84,16 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
 
     render(): React.ReactNode {
         let graph;
+        let error = "";
         try {
             graph = VizExplorer.parse(this.state.graphCode);
         }
         catch (e) {
             graph = VizExplorer.parse("strict digraph {}");
+            error = " error"
         }
         return (
-            <div className="explorer" ref={this.rootElement}>
+            <div className={"explorer" + error} ref={this.rootElement}>
                 <section className="main">
                     <Editor code={this.state.graphCode} onChange={this.handleCodeChange} />
                     <Gutter />
