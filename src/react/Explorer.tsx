@@ -9,12 +9,16 @@ import FileDescription from "../util/FileDescription";
 import Gutter from "./Gutter";
 
 type ExplorerProps = {
-    file: FileDescription
+    file: FileDescription,
+    onFileChange?: (code:string) => void,
+    onSave?: (code:string) => void,
+    onSaveAs?: (code:string) => void,
 }
 
 type ExplorerState = {
     graphFilters: string[][],
-    graphCode: string
+    graphCode: string,
+    code: string,
 }
 
 class Explorer extends React.Component<ExplorerProps, ExplorerState> {
@@ -26,8 +30,19 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         this.state = {
             graphFilters: [],
             graphCode: props.file.contents,
+            code: props.file.contents,
         }
     }
+
+    componentDidMount = () => {
+        electronAPI.onSaveRequested(() => {
+            this.props.onSave(this.state.code);
+        });
+        electronAPI.onSaveAsRequested(() => {
+            this.props.onSaveAs(this.state.code);
+        });
+    };
+
 
     filterSubgraph = (subgraph:GraphBaseModel, path:string[]): GraphBaseModel => {
         subgraph.subgraphs.forEach((sub) => this.filterSubgraph(sub, [...path, sub.id]));
@@ -73,13 +88,18 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         try {
             VizExplorer.parse(code);
             this.setState({
-                graphCode: code
+                graphCode: code,
+                code: code,
             });
             this.rootElement.current.classList.remove("error");
         }
         catch (e) {
+            this.setState({
+                code: code,
+            });
             this.rootElement.current.classList.add("error");
         }
+        this.props.onFileChange(code);
     }
 
     render(): React.ReactNode {
@@ -111,7 +131,7 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                     </section>
                 </section>
                 <section className="status">
-                    File: <em className="path" onClick={electronAPI.openFolder.bind(this, this.props.file.path)}>{this.props.file.path}</em>
+                    File: <em className="path" onClick={electronAPI.openFolder.bind(this, this.props.file.path)}>{this.props.file.path ? this.props.file.path : "(unsaved file)"}</em>
                 </section>
             </div>
         );

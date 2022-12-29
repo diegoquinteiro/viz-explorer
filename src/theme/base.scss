@@ -1,10 +1,11 @@
-body {
-	background-color: $background;
-	color: $primary;
-}
 html,body {
 	margin: 0;
 	height: 100%;
+	background-color: $background;
+	color: $primary;
+}
+textarea:focus, input:focus, button:focus {
+    outline: 2px solid $lighten;
 }
 body{
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
@@ -48,7 +49,7 @@ svg {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	margin-left: 1rem;
+	padding-left: 1rem;
 }
 
 .tabs li {
@@ -61,6 +62,12 @@ svg {
 .tabs li.selected {
 	background-color: $backdrop;
 	box-shadow: 1px 1px 2px 2px $darken;
+}
+.tabs li.changed .filename {
+	color: $secondary;
+}
+.tabs li.changed .filename::after {
+	content: '*';
 }
 
 .tabs li:not(.selected):hover {
@@ -178,6 +185,7 @@ svg {
 
 .editor {
 	display: flex;
+	flex-direction: column;
 	flex-grow: 1;
 	overflow: auto;
 	height: 100%;

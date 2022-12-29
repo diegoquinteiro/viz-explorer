@@ -11,6 +11,7 @@ type EditorProps = {
 }
 
 class Editor extends React.Component<EditorProps> {
+
     async editorDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) {
         monaco.languages.register({ id: "dot" });
         monaco.languages.setMonarchTokensProvider("dot", DOTLanguage.tokenProvider);
@@ -32,18 +33,18 @@ class Editor extends React.Component<EditorProps> {
     render(): React.ReactNode {
         return <section className="editor">
             <div>
-            <ResponsiveMonacoEditor
-                language="dot"
-                theme="vs-dark"
-                value={this.props.code}
-                options={{
-                    minimap: {
-                        enabled: false,
-                    }
-                }}
-                onChange={this.props.onChange}
-                editorDidMount={this.editorDidMount.bind(this)}
-            />
+                <ResponsiveMonacoEditor
+                    language="dot"
+                    theme="vs-dark"
+                    value={this.props.code}
+                    options={{
+                        minimap: {
+                            enabled: false,
+                        }
+                    }}
+                    onChange={this.props.onChange}
+                    editorDidMount={this.editorDidMount.bind(this)}
+                />
             </div>
         </section>;
     }

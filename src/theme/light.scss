@@ -26,7 +26,9 @@ $lighten: rgba(160, 160, 160, 0.12);
 	@import "base.scss";
 
 	.render:not(.png) {
-		svg .node>ellipse {
+		svg .node>ellipse,
+		svg .node>path,
+		svg .node>polygon {
 			fill: $background-light;
 		}
 		svg .cluster>polygon {
