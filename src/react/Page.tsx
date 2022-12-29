@@ -61,16 +61,10 @@ class Page extends React.Component<{}, PageState> {
 
     handleOpenFileClick = async (e: React.SyntheticEvent) => {
         const file = await electronAPI.openFile();
-        try {
-            VizExplorer.parse(file.contents);
-            this.setState((state, props) => ({
-                selectedTab: state.files.length,
-                files: [...state.files, file],
-            }));
-        }
-        catch (e) {
-            alert("Invalid DOT file, please check the file.");
-        }
+        this.setState((state, props) => ({
+            selectedTab: state.files.length,
+            files: [...state.files, file],
+        }));
     };
 
     async handleToggleTheme() {

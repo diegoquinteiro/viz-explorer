@@ -44,7 +44,13 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         if (this.state.graphFilters.some(f => f[0] == "root" && f.length == 1)) {
             return VizExplorer.parse("strict digraph {}");
         }
-        let graph = VizExplorer.parse(this.state.graphCode);
+        let graph;
+        try {
+            graph = VizExplorer.parse(this.state.graphCode);
+        }
+        catch (e) {
+            graph = VizExplorer.parse("strict digraph {}");
+        }
         this.filterSubgraph(graph, ["root"]);
         return graph;
     }
@@ -77,6 +83,13 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
     }
 
     render(): React.ReactNode {
+        let graph;
+        try {
+            graph = VizExplorer.parse(this.state.graphCode);
+        }
+        catch (e) {
+            graph = VizExplorer.parse("strict digraph {}");
+        }
         return (
             <div className="explorer" ref={this.rootElement}>
                 <section className="main">
@@ -87,7 +100,7 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                     <section className="outline">
                         <ul>
                             <Subgraph
-                                graph={VizExplorer.parse(this.state.graphCode)}
+                                graph={graph}
                                 filteredOut={this.state.graphFilters.some(f => f[0] == "root" && f.length == 1)}
                                 graphFilters={this.state.graphFilters.filter(f => f[0] == "root" && f.length > 1).map(f => f.slice(1))}
                                 onFilter={this.handleFilter}
