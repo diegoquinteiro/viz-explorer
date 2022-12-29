@@ -98,7 +98,7 @@ svg .cluster>polygon {
 
 svg:has(.selected) .cluster:not(.selected),
 svg:has(.selected) .node:not(.selected):not(.highlight) {
-	opacity: 0.5;
+	opacity: 0.3;
 }
 
 svg:has(.selected) .edge:not(.selected) {

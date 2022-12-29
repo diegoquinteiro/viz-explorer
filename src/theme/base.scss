@@ -268,14 +268,6 @@ svg {
 	cursor: pointer;
 }
 
-.modifier .flow input {
-	appearance: radio;
-}
-
-.modifier svg:has(.selected) .edge.highlight:not(.selected) {
-	opacity: 0.5;
-}
-
 .subgraph.disabled .label {
 	opacity: 0.3;
 }
@@ -285,4 +277,12 @@ svg {
 	cursor: pointer;
 }
 
-@import "svg.scss";
+.render:not(.png) {
+	@import "svg.scss";
+}
+.modifier svg:has(.selected) .edge.highlight:not(.selected) {
+	opacity: 0.5 !important;
+}
+.modifier svg:has(.selected) .edge:not(.selected) {
+	opacity: 0.1 !important;
+}
