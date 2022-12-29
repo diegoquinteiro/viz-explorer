@@ -1,17 +1,23 @@
 $backdrop: #1e1e1e;
 $primary: #eee;
 $background: #333;
+$background-light: #292929;
 $secondary: #fec;
 $secondary-foreground: #fec9;
 $terciary: #c8ffe6;
 $terciary-foreground: #c8ffe690;
 $accent: #0ff;
-$darken: rgba(0, 0, 0, 0.1);
+$darken: rgba(0, 0, 0, 0.2);
 $lighten: rgba(255, 255, 255, 0.1);
 
+@media (prefers-color-scheme: dark) {
+	.light-theme-only {
+		display: none;
+	}
+	.dark-theme-only {
+		display: block !important;
+		color: $primary;
+	}
 
-.light-theme-only {
-	display: none;
+	@import "base.scss";
 }
-
-@import "base.scss";

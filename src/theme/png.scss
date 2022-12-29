@@ -1,0 +1,36 @@
+$backdrop: #fffffe;
+$primary: #333;
+$background: #eee;
+$background-light: #f9f9f9;
+$secondary: #36b;
+$secondary-foreground: #36b9;
+$terciary: #3bb;
+$terciary-foreground: #3bb9;
+$accent: #f33;
+$darken: rgba(70, 70, 70, 0.1);
+$lighten: rgba(160, 160, 160, 0.12);
+
+
+.png {
+	&.render {
+		position: fixed;
+		left: 100%;
+		background-color: #fff;
+
+		svg{
+			width: auto !important;
+			height: auto !important;
+			position: relative;
+			font-weight: normal !important;
+		}
+	}
+
+	@import "svg.scss";
+
+	svg .node>ellipse {
+		fill: $background-light;
+	}
+	svg .cluster>polygon {
+		fill: $lighten;
+	}
+}

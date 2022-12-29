@@ -12,6 +12,7 @@ body{
 	margin: 0;
 	padding: 0;
 	user-select: none;
+	color: $primary;
 }
 body,
 #root,
@@ -181,7 +182,6 @@ svg {
 	overflow: auto;
 	height: 100%;
 	min-width: 20rem;
-	border-right: 1px solid $lighten;
 }
 .editor > div {
 	display: flex;
@@ -189,13 +189,11 @@ svg {
 	background-color: --vscode-background !important;
 }
 .outline {
-	background-color: $darken;
+	background-color: $background-light;
 	display: flex;
-	font-weight: lighter;
 	flex-grow: 1;
 	min-width: 20rem;
 	overflow: auto;
-	border-left: 1px solid $lighten;
 }
 
 .outline ul {
@@ -209,9 +207,34 @@ svg {
 	height: 100%;
 	overflow: auto !important;
 }
+.viewer {
+	position: relative;
+}
+.viewer > .save {
+	display: block;
+	white-space: nowrap;
+	position: absolute;
+	right: 1.2rem;
+	bottom: 1.2rem;
+	opacity: 0;
+	transition-property: opacity;
+	transition-duration: 500ms;
+	cursor: pointer;
+	z-index: 10;
+	font-size: small;
+	background-color: $lighten;
+	padding: 0.25rem;
+	border-radius: 0.25rem;
+	box-shadow: 1px 3px 3px $backdrop;
+}
+.viewer > .save:hover {
+	background-color: $background;
+}
+.viewer:hover > .save {
+	opacity: 1;
+}
 
 .status {
-	font-weight: lighter;
 	padding: 0.3rem;
 	box-shadow: 1px 1px 1px $background;
 }
@@ -241,121 +264,6 @@ svg {
 	cursor: pointer;
 }
 
-.modifier .flow input {
-	appearance: radio;
-}
-
-svg text {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-		Arial, sans-serif !important;
-	font-weight: lighter;
-}
-
-svg .cluster:hover,
-svg .cluster.selected {
-	cursor: pointer !important;
-	fill: $secondary;
-}
-
-svg .cluster:hover polygon,
-svg .cluster.selected polygon {
-	stroke: $secondary;
-}
-
-#graph0>polygon {
-	fill: $backdrop;
-}
-
-svg .node {
-	fill: $terciary;
-}
-
-svg .node>ellipse {
-	fill: $lighten;
-	stroke: none;
-}
-
-svg .node:hover {
-	cursor: pointer;
-	fill: $secondary-foreground;
-}
-
-svg .node:hover>ellipse {
-	stroke: $secondary-foreground;
-}
-
-svg .node.selected {
-	fill: $secondary;
-}
-
-svg .node.selected>ellipse {
-	stroke: $secondary;
-}
-
-svg .node.selected:hover {
-	fill: $secondary;
-}
-
-svg .node.selected:hover>ellipse {
-	stroke: $secondary;
-}
-
-svg .node.highlight {
-	fill: $secondary;
-}
-
-svg .node.highlight>ellipse {
-	stroke: $secondary;
-}
-
-svg .node.highlight:hover {
-	fill: $secondary;
-}
-
-svg .node.highlight:hover>ellipse {
-	stroke: $secondary;
-}
-
-svg .edge>path,
-svg .edge>polygon {
-	stroke: $lighten;
-}
-
-svg .edge>polygon {
-	fill: $lighten;
-}
-
-svg .edge.selected>path,
-svg .edge.selected>polygon {
-	stroke: $terciary-foreground;
-}
-
-svg .edge.selected>polygon {
-	fill: $terciary-foreground;
-}
-
-svg .cluster {
-	fill: $primary;
-}
-
-svg .cluster>polygon {
-	fill: $lighten;
-	stroke: none;
-}
-
-svg:has(.selected) .cluster:not(.selected),
-svg:has(.selected) .node:not(.selected):not(.highlight) {
-	opacity: 0.5;
-}
-
-svg:has(.selected) .edge:not(.selected) {
-	opacity: 0;
-}
-
-.modifier svg:has(.selected) .edge.highlight:not(.selected) {
-	opacity: 0.5;
-}
-
 .subgraph.disabled .label {
 	opacity: 0.3;
 }
@@ -363,4 +271,14 @@ svg:has(.selected) .edge:not(.selected) {
 .path:hover {
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+.render:not(.png) {
+	@import "svg.scss";
+}
+.modifier svg:has(.selected) .edge.highlight:not(.selected) {
+	opacity: 1 !important;
+}
+.modifier svg:has(.selected) .edge:not(.selected) {
+	opacity: 0.2 !important;
 }

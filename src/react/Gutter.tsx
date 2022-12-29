@@ -31,17 +31,13 @@ class Gutter extends React.Component<{ right?: boolean }, { elementWidth?: numbe
             let previousWidth = previous.offsetWidth;
             let nextWidth = next.offsetWidth;
 
-            console.log("antes", previousWidth, offset);
-
             if (this.props.right) this.setElementWidth(next, nextWidth - offset);
             else this.setElementWidth(previous, previousWidth + offset);
-
-            console.log("depois", previous.getBoundingClientRect().width, "era para ser", previousWidth + offset);
         }
     }
 
     setElementWidth = (element: HTMLElement, width:number) => {
-        let setWidth = width - 1; // for some reason =)
+        let setWidth = width;
         if (width < 20 && width < element.offsetWidth) setWidth = 0;
         element.style.minWidth = setWidth + "px";
         element.style.maxWidth = setWidth + "px";

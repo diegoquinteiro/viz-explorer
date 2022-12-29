@@ -2,7 +2,8 @@ import React, { ComponentType } from "react"
 import VizExplorer from "../viz/viz-explorer"
 import { RootGraphModel } from "ts-graphviz"
 import Async from 'react-async';
-import { pan, zoom, getScale, setScale, resetScale } from 'svg-pan-zoom-container';
+import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas';
 import { getScaleAndOffset, setScaleAndOffset } from '../util/svg-pan-zoom-utils'
 
 type GraphViewerProps = {
@@ -163,6 +164,27 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
         return false;
     }
 
+    handleSave = () => {
+        const svgWidth = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("width");
+        const svgHeight = (this.svgContainer.current.firstChild as SVGSVGElement).getAttribute("height");
+        const clone = this.svgContainer.current.cloneNode(true) as HTMLElement;
+        clone.classList.add("png");
+        clone.setAttribute("style", `width: ${svgWidth}; height: ${svgHeight};`);
+        (clone.firstChild as SVGSVGElement).setAttribute("style", "");
+        (clone.firstChild as SVGSVGElement).setAttribute("transform", "");
+        this.svgContainer.current.parentElement.appendChild(clone);
+        html2canvas(clone, {
+            backgroundColor: null,
+            scale: 2,
+        }).then((image) => {
+            const link = document.createElement('a');
+            link.href = image.toDataURL();
+            link.download = 'graph.png';
+            link.click();
+            clone.remove();
+        });
+    }
+
     render(): React.ReactNode {
         const renderSVG = async (): Promise<SVGSVGElement> => {
             return await VizExplorer.toSVG(this.props.graph);
@@ -170,6 +192,7 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
 
         return (
             <section className="viewer">
+                <a className="save" onClick={this.handleSave}>💾 Save as PNG</a>
                 <Async fallback={<div>Loading...</div>} promiseFn={renderSVG} onResolve={this.makeInteractive}>
                     {({ data, error, isPending }) => {
                         if (isPending) return "Loading...";
