@@ -1,9 +1,9 @@
 import React from "react";
 import electronAPI from "../api/electron-api";
-import { graph, GraphBaseModel, RootGraph, RootGraphModel } from "ts-graphviz";
+import { graph, GraphBaseModel, RootGraph, RootGraphModel, EdgeTarget } from "ts-graphviz";
 import VizExplorer from "../viz/viz-explorer";
 import GraphViewer from "./GraphViewer";
-import { Subgraph } from "./Subgraph";
+import { Outline } from "./Outline";
 import Editor from "./Editor";
 import FileDescription from "../util/FileDescription";
 import Gutter from "./Gutter";
@@ -45,18 +45,38 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
 
 
     filterSubgraph = (subgraph:GraphBaseModel, path:string[]): GraphBaseModel => {
-        subgraph.subgraphs.forEach((sub) => this.filterSubgraph(sub, [...path, sub.id]));
+        const applicableFilters =
+            this.state.graphFilters
+                .filter((graphFilter) =>
+                    graphFilter.length == path.length + 1 // Filters applicable to this nesting level
+                    && graphFilter
+                        .slice(0, path.length)
+                        .every((val, i) => val == path[i]) // Checks if graphFilter starts with path
+                )
+                .map(f => f[f.length - 1]); // extracts the last part of the filter path
 
-        this.state.graphFilters
-            .filter((filter) => filter.length == path.length + 1 && filter.slice(0, path.length).every((val, i) => val == path[i]))
-            .map(filter => subgraph.subgraphs.find(s => s.id == filter[filter.length - 1]))
+        applicableFilters
+            .filter(f => f.startsWith("node:"))
+            .map(filter => subgraph.nodes.find(n => "node:" + n.id == filter))
+            .forEach(filteredOut => subgraph.removeNode(filteredOut));
+
+        applicableFilters
+            .filter(f => f.startsWith("edge:"))
+            .map(filter => subgraph.edges.filter(e => "edge:" + VizExplorer.getEdgeId(e) == filter))
+            .forEach(filteredOut => filteredOut.forEach(item => subgraph.removeEdge(item)));
+
+        applicableFilters
+            .filter(f => f.startsWith("subgraph:"))
+            .map(filter => subgraph.subgraphs.find(s => "subgraph:" + s.id == filter))
             .forEach(filteredOut => subgraph.removeSubgraph(filteredOut));
+
+        subgraph.subgraphs.forEach((sub) => this.filterSubgraph(sub, [...path, "subgraph:" + sub.id]));
 
         return subgraph;
     }
 
     getFilteredGraph = (): RootGraphModel => {
-        if (this.state.graphFilters.some(f => f[0] == "root" && f.length == 1)) {
+        if (this.state.graphFilters.some(f => f[0] == "subgraph:root" && f.length == 1)) {
             return VizExplorer.parse("strict digraph {}");
         }
         let graph;
@@ -66,12 +86,12 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         catch (e) {
             graph = VizExplorer.parse("strict digraph {}");
         }
-        this.filterSubgraph(graph, ["root"]);
+        this.filterSubgraph(graph, ["subgraph:root"]);
         return graph;
     }
 
     handleFilter = (newFilter:string[], remove:boolean):void => {
-        let filter = ["root", ...newFilter];
+        let filter = ["subgraph:root", ...newFilter];
         if (remove) {
             this.setState((state, props) => ({
                 graphFilters: state.graphFilters.filter(f => !f.every((val, i) => val == filter[i]))
@@ -121,10 +141,10 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                     <Gutter right />
                     <section className="outline">
                         <ul>
-                            <Subgraph
+                            <Outline
                                 graph={graph}
-                                filteredOut={this.state.graphFilters.some(f => f[0] == "root" && f.length == 1)}
-                                graphFilters={this.state.graphFilters.filter(f => f[0] == "root" && f.length > 1).map(f => f.slice(1))}
+                                filteredOut={this.state.graphFilters.some(f => f[0] == "subgraph:root" && f.length == 1)}
+                                graphFilters={this.state.graphFilters.filter(f => f[0] == "subgraph:root" && f.length > 1).map(f => f.slice(1))}
                                 onFilter={this.handleFilter}
                             />
                         </ul>

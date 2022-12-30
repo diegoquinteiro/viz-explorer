@@ -152,6 +152,19 @@ svg {
 	transition-property: width;
 	transition-duration: 0.5s;
 	transition-delay: 0;
+	align-items: center;
+	text-align: center;
+}
+.gutter::before {
+	content: "⠿";
+	font-size: 0.7rem;
+	color: $lighten;
+	transition-property: font-size;
+	transition-duration: 0.5s;
+	transition-delay: 0;
+	width: 100%;
+    display: block;
+    text-align: center;
 }
 .gutter:hover {
 	background-color: $lighten;
@@ -162,6 +175,15 @@ svg {
 	transition-duration: 0.5s;
 	transition-delay: 0;
 }
+.gutter:hover::before {
+	font-size: 1.4rem;
+	transition-property: font-size;
+	transition-duration: 0.5s;
+	transition-delay: 0;
+}
+.gutter.collapsed::before {
+	font-size: 1.4rem;
+}
 .gutter.collapsed {
 	width: 1rem;
 	animation: normal;
@@ -171,6 +193,9 @@ svg {
 }
 .gutter.collapsed:hover {
 	width: 2rem;
+}
+.gutter.collapsed:hover::before {
+	font-size: 2.8rem;
 }
 .viewer {
 	display: flex;
@@ -190,25 +215,112 @@ svg {
 	overflow: auto;
 	height: 100%;
 	min-width: 20rem;
+	max-width: 20rem;
 }
 .editor > div {
 	display: flex;
 	flex-grow: 1;
 	background-color: --vscode-background !important;
 }
+
 .outline {
 	background-color: $background-light;
 	display: flex;
 	flex-grow: 1;
 	min-width: 20rem;
+	max-width: 20rem;
 	overflow: auto;
 }
 
+.outline li {
+	position: relative;
+}
 .outline ul {
 	padding-left: 1rem;
 	list-style: none;
 	white-space: nowrap;
 }
+.outline > ul {
+	margin: 1rem;
+}
+.outline .toggle {
+	cursor: pointer;
+	font-weight: bold;
+	display: block;
+	color: $terciary;
+	position: absolute;
+	left: - 1rem;
+	padding: 0 0.2rem;
+	transition: transform;
+	transition-duration: 250ms;
+}
+.outline .collapsed .toggle {
+	transform: rotate(-90deg);
+}
+.outline .collapsed > ul {
+	height: 0px !important;
+	overflow: hidden;
+}
+
+.outline .glyph {
+	display: inline-block;
+	margin: 0 0.3rem;
+	width: 1rem;
+}
+.outline .subgraph > span > .label {
+	color: $primary;
+	cursor: pointer;
+}
+.outline .subgraph > span > .label:hover {
+	color: $accent;
+}
+
+.outline .node-representation {
+	max-width: 2rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.outline .node-representation.multi-word {
+	color: $secondary;
+}
+.outline .node-representation.single-word {
+	color: $primary;
+}
+
+.outline .glyph {
+	color: $terciary;
+}
+
+.outline .edge .label .brackets::before {
+	content: "{";
+	color: $primary;
+	display: inline-block;
+	margin-right: 0.25rem;
+}
+.outline .edge .label .brackets::after {
+	content: "}";
+	color: $primary;
+	display: inline-block;
+	margin-right: 0.25rem;
+}
+.outline .edge .label .edge-node {
+	color: $secondary;
+	margin-right: 0.25rem;
+}
+.outline .edge .label .edge-side:not(:last-child)::after {
+	content: "⇾";
+	display: inline-block;
+	margin-right: .25rem;
+	font-weight: lighter;
+	color: $terciary;
+}
+.outline .edge .label .brackets .edge-node:not(:last-child)::after {
+	content: ",";
+	margin-right: 0.25rem;
+	display: inline-block;
+	color: $primary;
+}
+
 
 .render {
 	width: 100%;
@@ -272,7 +384,8 @@ svg {
 	cursor: pointer;
 }
 
-.subgraph.disabled .label {
+.subgraph.disabled .label,
+.node.disabled .label {
 	opacity: 0.3;
 }
 

@@ -1,8 +1,4 @@
-import FileDescription from "../util/FileDescription";
-
-const sampleFile:FileDescription = {
-    path: "sample.dot",
-    contents: `strict digraph {
+strict digraph {
     clusterrank=local
     compound=true
     ranksep=3.0
@@ -36,6 +32,4 @@ const sampleFile:FileDescription = {
             f -> c
         }
     }
-}`,
 }
-export default sampleFile;
