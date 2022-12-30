@@ -113,7 +113,11 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
 
         svgContainer.addEventListener("click", (e) => {
             if (
-                ((e.target as SVGElement).parentElement.id == "graph0" || (e.target as SVGElement).parentElement.classList.contains("render"))
+                (
+                    (e.target as SVGElement).parentElement.id == "graph0"
+                    || (e.target as SVGElement).parentElement.classList.contains("render")
+                    || (e.target as SVGElement).parentElement.classList.contains("viewer")
+                )
                 && !movedSinceDown
                 && !this.state.modifier
             ) {
