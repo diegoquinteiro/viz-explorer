@@ -286,6 +286,9 @@ svg {
 .outline .node-representation.single-word {
 	color: $primary;
 }
+.outline .node-representation.node-hidden {
+	opacity: 0.5;
+}
 
 .outline .glyph {
 	color: $terciary;
@@ -296,12 +299,14 @@ svg {
 	color: $primary;
 	display: inline-block;
 	margin-right: 0.25rem;
+	opacity: 0.5;
 }
 .outline .edge .label .brackets::after {
 	content: "}";
 	color: $primary;
 	display: inline-block;
 	margin-right: 0.25rem;
+	opacity: 0.5;
 }
 .outline .edge .label .edge-node {
 	color: $secondary;
@@ -319,6 +324,7 @@ svg {
 	margin-right: 0.25rem;
 	display: inline-block;
 	color: $primary;
+	opacity: 0.5;
 }
 
 

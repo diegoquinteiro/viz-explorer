@@ -1,6 +1,6 @@
 import React from "react";
 import electronAPI from "../api/electron-api";
-import { graph, GraphBaseModel, RootGraph, RootGraphModel, EdgeTarget } from "ts-graphviz";
+import { graph, GraphBaseModel, RootGraph, RootGraphModel, EdgeTarget, Edge } from "ts-graphviz";
 import VizExplorer from "../viz/viz-explorer";
 import GraphViewer from "./GraphViewer";
 import { Outline } from "./Outline";
@@ -22,7 +22,7 @@ type ExplorerState = {
 }
 
 class Explorer extends React.Component<ExplorerProps, ExplorerState> {
-    rootElement: React.RefObject<HTMLElement>;
+    rootElement: React.RefObject<HTMLDivElement>;
 
     constructor(props:ExplorerProps) {
         super(props);
@@ -75,9 +75,52 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         return subgraph;
     }
 
-    getFilteredGraph = (): RootGraphModel => {
-        if (this.state.graphFilters.some(f => f[0] == "subgraph:root" && f.length == 1)) {
-            return VizExplorer.parse("strict digraph {}");
+    filterHiddenEdges = (subgraph:GraphBaseModel, hiddenNodeIds:string[]): void => {
+        let edgesToRemove:Edge[] = [];
+        let edgesToCreate:Edge[] = [];
+        subgraph.edges
+            .forEach(edge => {
+                let targets = edge.targets.map(target => {
+                    if (Array.isArray(target)) {
+                        return target.filter(node => !hiddenNodeIds.some(id => id == node.id));
+                    }
+                    else if (hiddenNodeIds.some(id => id == target.id)) {
+                        return [];
+                    }
+                    return target;
+                });
+
+                edgesToRemove.push(edge);
+                let newEdgeTargets = [];
+                targets.forEach((target, i) => {
+                    if (Array.isArray(target) && target.length == 0) {
+                        if (newEdgeTargets.length > 1) {
+                            edgesToCreate.push(new Edge([targets[0], targets[1], ...targets.slice(2)], edge.attributes));
+                        }
+                        newEdgeTargets = [];
+                    }
+                    else {
+                        newEdgeTargets.push(target);
+                    }
+                });
+                if (newEdgeTargets.length > 1) {
+                    edgesToCreate.push(new Edge([targets[0], targets[1], ...targets.slice(2)], edge.attributes));
+                }
+            });
+
+        edgesToRemove.forEach(edge => subgraph.removeEdge(edge));
+        edgesToCreate.forEach(edge => subgraph.addEdge(edge));
+
+        subgraph.subgraphs.forEach((sub) => this.filterHiddenEdges(sub, hiddenNodeIds));
+    }
+
+    getAllNodeIds = (subgraph:GraphBaseModel):string[] => {
+        return [...subgraph.nodes.map(n => n.id), ...subgraph.subgraphs.map(s => this.getAllNodeIds(s)).flat()];
+    }
+
+    getFilteredGraph = (): { graph:RootGraphModel, hiddenNodeIds:string[] } => {
+        if (this.state.graphFilters.some(f => f[0] == "subgraph:graph" && f.length == 1)) {
+            return { graph: VizExplorer.parse("strict digraph {}"),  hiddenNodeIds:[] };
         }
         let graph;
         try {
@@ -86,12 +129,21 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         catch (e) {
             graph = VizExplorer.parse("strict digraph {}");
         }
-        this.filterSubgraph(graph, ["subgraph:root"]);
-        return graph;
+
+        const originalNodeIds = this.getAllNodeIds(graph);
+        this.filterSubgraph(graph, ["subgraph:graph"]);
+        const filteredNodeIds = this.getAllNodeIds(graph);
+
+        const hiddenNodeIds = originalNodeIds.filter(node => !filteredNodeIds.find(n => n == node));
+
+
+        this.filterHiddenEdges(graph, hiddenNodeIds);
+
+        return { graph, hiddenNodeIds } ;
     }
 
     handleFilter = (newFilter:string[], remove:boolean):void => {
-        let filter = ["subgraph:root", ...newFilter];
+        let filter = ["subgraph:graph", ...newFilter];
         if (remove) {
             this.setState((state, props) => ({
                 graphFilters: state.graphFilters.filter(f => !f.every((val, i) => val == filter[i]))
@@ -132,19 +184,21 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
             graph = VizExplorer.parse("strict digraph {}");
             error = " error"
         }
+        let filteredGraph = this.getFilteredGraph();
         return (
             <div className={"explorer" + error} ref={this.rootElement}>
                 <section className="main">
                     <Editor code={this.state.graphCode} onChange={this.handleCodeChange} />
                     <Gutter />
-                    <GraphViewer graph={this.getFilteredGraph()} />
+                    <GraphViewer graph={filteredGraph.graph} />
                     <Gutter right />
                     <section className="outline">
                         <ul>
                             <Outline
                                 graph={graph}
-                                filteredOut={this.state.graphFilters.some(f => f[0] == "subgraph:root" && f.length == 1)}
-                                graphFilters={this.state.graphFilters.filter(f => f[0] == "subgraph:root" && f.length > 1).map(f => f.slice(1))}
+                                filteredOut={this.state.graphFilters.some(f => f[0] == "subgraph:graph" && f.length == 1)}
+                                graphFilters={this.state.graphFilters.filter(f => f[0] == "subgraph:graph" && f.length > 1).map(f => f.slice(1))}
+                                hiddenNodeIds={filteredGraph.hiddenNodeIds}
                                 onFilter={this.handleFilter}
                             />
                         </ul>
