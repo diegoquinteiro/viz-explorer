@@ -1,6 +1,7 @@
 import React from "react";
 import electronAPI from "../api/electron-api";
-import { graph, GraphBaseModel, RootGraph, RootGraphModel, EdgeTarget, Edge } from "ts-graphviz";
+// @ts-ignore
+import { GraphBaseModel, RootGraph, RootGraphModel, EdgeTarget, Edge } from "ts-graphviz";
 import VizExplorer from "../viz/viz-explorer";
 import GraphViewer from "./GraphViewer";
 import { Outline } from "./Outline";

@@ -1,6 +1,6 @@
 {
   "name": "viz-explorer",
-  "productName": "viz-explorer",
+  "productName": "GraphViz Explorer",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",

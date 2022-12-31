@@ -1,3 +1,4 @@
+// @ts-ignore
 import { toDot, fromDot, Node, RootGraphModel, RootGraph, GraphBaseModel, NodeRefGroup, NodeRef, Edge } from "ts-graphviz"
 
 function parse(dot: string): RootGraphModel {

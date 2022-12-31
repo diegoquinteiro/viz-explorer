@@ -1,5 +1,6 @@
 import React, { ComponentType } from "react"
 import VizExplorer from "../viz/viz-explorer"
+// @ts-ignore
 import { RootGraphModel } from "ts-graphviz"
 import Async from 'react-async';
 import html2canvas from 'html2canvas';

@@ -1,5 +1,6 @@
 import React, { SyntheticEvent } from "react";
 import VizExplorer from "../viz/viz-explorer";
+// @ts-ignore
 import { GraphBaseModel, Edge, NodeRef } from "ts-graphviz";
 
 type OutlineProps = {
