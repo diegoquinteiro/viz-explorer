@@ -77,10 +77,10 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
     }
 
     filterHiddenEdges = (subgraph:GraphBaseModel, hiddenNodeIds:string[]): void => {
-        let edgesToRemove:Edge[] = [];
         let edgesToCreate:Edge[] = [];
         subgraph.edges
             .forEach(edge => {
+                // Gets all valid targets, those who doesn't point to a hiden node
                 let targets = edge.targets.map(target => {
                     if (Array.isArray(target)) {
                         return target.filter(node => !hiddenNodeIds.some(id => id == node.id));
@@ -91,12 +91,27 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                     return target;
                 });
 
-                edgesToRemove.push(edge);
+                // The following algorithm will break the original edges
+                // into several edges if they're discontinued by hidden nodes.
+                //
+                // By the previous loop, all hidden nodes will become an empty
+                // array ([]).
+                //
+                // Example, the edge:
+                // a -> b -> c -> d -> e
+                //
+                // if node c is hidden, will at this point be:
+                // a -> b -> [] -> d -> e
+                //
+                // and will become two edges:
+                // a -> b
+                // d -> e
                 let newEdgeTargets = [];
                 targets.forEach((target, i) => {
                     if (Array.isArray(target) && target.length == 0) {
                         if (newEdgeTargets.length > 1) {
-                            edgesToCreate.push(new Edge([targets[0], targets[1], ...targets.slice(2)], edge.attributes));
+                            // @ts-ignore
+                            edgesToCreate.push(new Edge([targets[0], targets[1], ...targets.slice(2)], edge.attributes.values));
                         }
                         newEdgeTargets = [];
                     }
@@ -105,11 +120,13 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                     }
                 });
                 if (newEdgeTargets.length > 1) {
-                    edgesToCreate.push(new Edge([targets[0], targets[1], ...targets.slice(2)], edge.attributes));
+                    // @ts-ignore
+                    edgesToCreate.push(new Edge([targets[0], targets[1], ...targets.slice(2)], edge.attributes.values));
                 }
             });
 
-        edgesToRemove.forEach(edge => subgraph.removeEdge(edge));
+        // Recreates all edges
+        subgraph.edges.forEach(edge => subgraph.removeEdge(edge));
         edgesToCreate.forEach(edge => subgraph.addEdge(edge));
 
         subgraph.subgraphs.forEach((sub) => this.filterHiddenEdges(sub, hiddenNodeIds));
