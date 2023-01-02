@@ -18,6 +18,7 @@ const config: ForgeConfig = {
       appleApiKeyId: process.env.APPLE_API_KEY_ID ||  "",
       appleApiIssuer: process.env.APPLE_API_ISSUER ||  "",
     },
+    extendInfo: './build-files/Info.plist',
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],

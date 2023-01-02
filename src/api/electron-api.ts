@@ -8,7 +8,7 @@ declare const electronAPI: {
     getNativeTheme: () => Promise<string>,
     onThemeUpdated: (callback:() => void) => void,
     onSaveRequested: (callbacl:() => void) => void,
-    onOpenRequested: (callbacl:() => void) => void,
+    onOpenRequested: (callbacl:(filePath:string) => void) => void,
     onNewRequested: (callbacl:() => void) => void,
     onSaveAsRequested: (callbacl:() => void) => void,
     onCloseTabRequested: (callbacl:() => void) => void,
