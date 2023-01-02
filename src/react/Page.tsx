@@ -2,8 +2,6 @@ import electronAPI from "../api/electron-api";
 import * as React from "react";
 import FileDescription from "../util/FileDescription";
 import Explorer from "./Explorer";
-import VizExplorer from "../viz/viz-explorer";
-import sampleFile from "../viz/sample-file";
 import emptyFile from "../viz/empty-file";
 
 type PageState = {
@@ -34,6 +32,16 @@ class Page extends React.Component<{}, PageState> {
                 this.pageElement.current.classList.remove("modifier");
             }
         });
+        document.addEventListener('drop', (e: DragEvent) => {
+            for (const file of e.dataTransfer.files) {
+                this.openFile(file.path);
+            }
+        });
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
 
         electronAPI.onThemeUpdated(this.handleThemeChange);
         electronAPI.onCloseTabRequested(() => {
@@ -93,8 +101,16 @@ class Page extends React.Component<{}, PageState> {
         await this.openFile();
     };
 
-    openFile = async () => {
-        const file = await electronAPI.openFile();
+    openFile = async (filePath?:string) => {
+        let file:FileDescription;
+        if (filePath) {
+            console.log(filePath);
+            file = await electronAPI.openFile(filePath);
+        }
+        else {
+            file = await electronAPI.openFile();
+        }
+
         if (!file) return;
         if (this.state.files.find(f => f.path == file.path)) {
             this.setState((state) => ({

@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import FileDescription from './util/FileDescription';
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    openFile: () => ipcRenderer.invoke('dialog:openFile'),
+    openFile: (filePath?:string) => ipcRenderer.invoke('dialog:openFile', filePath),
     saveFile: (file:FileDescription, contents:string) => ipcRenderer.invoke('dialog:saveFile', file, contents),
     openFolder: (item:string) => ipcRenderer.invoke('shell:openFolder', item),
     toggleDarkMode: ():Promise<string> => ipcRenderer.invoke('dark-mode:toggle'),
@@ -11,7 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onSaveRequested: (callback:() => void) => ipcRenderer.on('save-requested', callback),
     onSaveAsRequested: (callback:() => void) => ipcRenderer.on('save-as-requested', callback),
     onNewRequested: (callback:() => void) => ipcRenderer.on('new-requested', callback),
-    onOpenRequested: (callback:() => void) => ipcRenderer.on('open-requested', callback),
+    onOpenRequested: (callback:(filePath:string) => void) => ipcRenderer.on('open-requested', (e:any, filePath:string) => callback(filePath)),
     onCloseTabRequested: (callback:() => void) => ipcRenderer.on('close-tab-requested', callback),
     onExportRequested: (callback:() => void) => ipcRenderer.on('export-requested', callback),
     onNextTabRequested: (callback:() => void) => ipcRenderer.on('next-tab-requested', callback),

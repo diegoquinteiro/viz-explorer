@@ -10,6 +10,8 @@ import FileDescription from './util/FileDescription';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
+const gotTheLock = app.requestSingleInstanceLock();
+
 app.name = "GraphViz Explorer";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -17,21 +19,23 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-async function handleOpenFile(): Promise<FileDescription> {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: [
-      { name: 'DOT files', extensions: ['dot'] },
-      { name: 'All Files', extensions: ['*'] },
-  ]});
-
-  if (canceled) {
-    return
-  } else {
-    return {
-      path: filePaths[0],
-      contents: readFileSync(filePaths[0]).toString()
+async function handleOpenFile(e:any, filePath?:string): Promise<FileDescription> {
+  if (!filePath) {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        { name: 'DOT files', extensions: ['dot'] },
+        { name: 'All Files', extensions: ['*'] },
+    ]});
+    if (canceled) {
+      return
     }
+    filePath = filePaths[0];
+  }
+
+  return {
+    path: filePath,
+    contents: readFileSync(filePath).toString()
   }
 }
 
@@ -60,7 +64,7 @@ async function handleOpenFolder(e:any, item:string): Promise<string> {
   return shell.openPath(path.dirname(item));
 }
 
-const createWindow = (): void => {
+const createWindow = (filePath?:string): void => {
   // Create the browser window.
   const display = screen.getPrimaryDisplay();
   const width = Math.round(display.bounds.width * 0.8);
@@ -75,7 +79,23 @@ const createWindow = (): void => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY).then(() => {
+    if (filePath) {
+      mainWindow.webContents.send("open-requested", filePath);
+    }
+    app.on('open-file', (event:Electron.Event, path:string) => {
+      event.preventDefault();
+      mainWindow.webContents.send("open-requested", path);
+    });
+  });
+
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
 
   nativeTheme.addListener("updated", () => {
     mainWindow.webContents.send("theme-updated");
@@ -193,39 +213,52 @@ const createWindow = (): void => {
   Menu.setApplicationMenu(menu);
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-  ipcMain.handle('dialog:openFile', handleOpenFile);
-  ipcMain.handle('dialog:saveFile', handleSaveFile);
-  ipcMain.handle('shell:openFolder', handleOpenFolder);
-  ipcMain.handle('dark-mode:toggle', () => {
-    if (nativeTheme.shouldUseDarkColors) {
-      nativeTheme.themeSource = 'light'
-    } else {
-      nativeTheme.themeSource = 'dark'
+if (!gotTheLock) {
+  app.quit();
+}
+else {
+  let openFilePath:string = null;
+  app.on('open-file', (event:Electron.Event, path:string) => {
+    event.preventDefault();
+    openFilePath = path;
+  });
+
+  // This method will be called when Electron has finished
+  // initialization and is ready to create browser windows.
+  // Some APIs can only be used after this event occurs.
+  app.on('ready', () => {
+    ipcMain.handle('dialog:openFile', handleOpenFile);
+    ipcMain.handle('dialog:saveFile', handleSaveFile);
+    ipcMain.handle('shell:openFolder', handleOpenFolder);
+    ipcMain.handle('dark-mode:toggle', () => {
+      if (nativeTheme.shouldUseDarkColors) {
+        nativeTheme.themeSource = 'light'
+      } else {
+        nativeTheme.themeSource = 'dark'
+      }
+      return nativeTheme.shouldUseDarkColors ? "dark" : "light";
+    });
+    ipcMain.handle('native-theme:get', () => {
+      return nativeTheme.shouldUseDarkColors ? "dark" : "light";
+    });
+    createWindow(openFilePath);
+  });
+
+  // Quit when all windows are closed.
+  app.on('window-all-closed', () => {
+      app.quit();
+  });
+
+  app.on('activate', () => {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
     }
-    return nativeTheme.shouldUseDarkColors ? "dark" : "light";
   });
-  ipcMain.handle('native-theme:get', () => {
-    return nativeTheme.shouldUseDarkColors ? "dark" : "light";
-  });
-  createWindow();
-});
+}
 
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-    app.quit();
-});
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
