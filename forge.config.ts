@@ -10,7 +10,14 @@ import { rendererConfig } from './webpack.renderer.config';
 
 const config: ForgeConfig = {
   packagerConfig: {
-    icon: './assets/icon'
+    icon: './assets/icon',
+    osxSign: {},
+    osxNotarize: {
+      tool: 'notarytool',
+      appleApiKey: process.env.APPLE_API_KEY ||  "",
+      appleApiKeyId: process.env.APPLE_API_KEY_ID ||  "",
+      appleApiIssuer: process.env.APPLE_API_ISSUER ||  "",
+    },
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
