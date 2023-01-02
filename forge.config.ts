@@ -14,6 +14,19 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'diegoquinteiro',
+          name: 'viz-explorer',
+        },
+        prerelease: false,
+        draft: true,
+      },
+    },
+  ],
   plugins: [
     new WebpackPlugin({
       mainConfig,
