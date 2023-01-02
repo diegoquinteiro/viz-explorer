@@ -139,7 +139,7 @@ const tokenProvider: monacoEditor.languages.IMonarchLanguage = {
     ],
 
     // we include these common regular expressions
-    symbols: /[=><!~?:&|+\-*\/\^%]+/,
+    symbols: /[=><!~?:&|+\-*/^%]+/,
 
 
     // The main tokenizer for our languages

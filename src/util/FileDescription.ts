@@ -1,4 +1,4 @@
-type FileDescription {
+type FileDescription = {
     path: string,
     contents: string,
     changed?: boolean,

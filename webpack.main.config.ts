@@ -2,7 +2,7 @@ import type { Configuration } from 'webpack';
 
 import { rules } from './webpack.rules';
 
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 export const mainConfig: Configuration = {
   /**
