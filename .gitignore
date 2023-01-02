@@ -87,3 +87,6 @@ typings/
 
 # Electron-Forge
 out/
+
+#VS Code settings
+.vscode/
