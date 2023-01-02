@@ -17,21 +17,23 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-async function handleOpenFile(): Promise<FileDescription> {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: [
-      { name: 'DOT files', extensions: ['dot'] },
-      { name: 'All Files', extensions: ['*'] },
-  ]});
-
-  if (canceled) {
-    return
-  } else {
-    return {
-      path: filePaths[0],
-      contents: readFileSync(filePaths[0]).toString()
+async function handleOpenFile(e:any, filePath?:string): Promise<FileDescription> {
+  if (!filePath) {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        { name: 'DOT files', extensions: ['dot'] },
+        { name: 'All Files', extensions: ['*'] },
+    ]});
+    if (canceled) {
+      return
     }
+    filePath = filePaths[0];
+  }
+
+  return {
+    path: filePath,
+    contents: readFileSync(filePath).toString()
   }
 }
 

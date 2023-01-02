@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import FileDescription from './util/FileDescription';
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    openFile: () => ipcRenderer.invoke('dialog:openFile'),
+    openFile: (filePath?:string) => ipcRenderer.invoke('dialog:openFile', filePath),
     saveFile: (file:FileDescription, contents:string) => ipcRenderer.invoke('dialog:saveFile', file, contents),
     openFolder: (item:string) => ipcRenderer.invoke('shell:openFolder', item),
     toggleDarkMode: ():Promise<string> => ipcRenderer.invoke('dark-mode:toggle'),

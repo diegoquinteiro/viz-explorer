@@ -1,7 +1,7 @@
 import FileDescription from "../util/FileDescription"
 
 declare const electronAPI: {
-    openFile: () => Promise<FileDescription>,
+    openFile: (filePath?:string) => Promise<FileDescription>,
     saveFile: (file:FileDescription, contents:string) => Promise<FileDescription>,
     openFolder: (item:string) => void,
     toggleDarkMode: () => Promise<string>,
