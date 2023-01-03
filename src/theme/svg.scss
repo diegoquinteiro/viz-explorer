@@ -15,7 +15,9 @@ svg .cluster.selected {
 }
 
 svg .cluster:hover polygon,
-svg .cluster.selected polygon {
+svg .cluster:hover path,
+svg .cluster.selected polygon,
+svg .cluster.selected path {
 	stroke: $secondary;
 }
 
@@ -126,7 +128,8 @@ svg .cluster {
 	fill: $primary;
 }
 
-svg .cluster>polygon {
+svg .cluster>polygon,
+svg .cluster>path {
 	fill: $lighten;
 	stroke: none;
 }
