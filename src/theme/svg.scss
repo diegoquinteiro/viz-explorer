@@ -1,6 +1,11 @@
 svg text {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
 		Arial, sans-serif !important;
+	fill: $primary;
+}
+
+svg .graph > text {
+	font-weight: bold;
 }
 
 svg .cluster:hover,
@@ -23,8 +28,10 @@ svg .node {
 }
 
 svg .node>ellipse,
+svg .node>circle,
 svg .node>path,
-svg .node>polygon, {
+svg .node>polyline,
+svg .node>polygon {
 	fill: $lighten;
 	stroke: none;
 }
@@ -35,7 +42,9 @@ svg .node:hover {
 }
 
 svg .node:hover>ellipse,
+svg .node:hover>circle,
 svg .node:hover>path,
+svg .node:hover>polyline,
 svg .node:hover>polygon {
 	stroke: $secondary-foreground;
 }
@@ -45,7 +54,9 @@ svg .node.selected {
 }
 
 svg .node.selected>ellipse,
+svg .node.selected>circle,
 svg .node.selected>path,
+svg .node.selected>polyline,
 svg .node.selected>polygon {
 	stroke: $secondary;
 }
@@ -55,7 +66,9 @@ svg .node.selected:hover {
 }
 
 svg .node.selected:hover>ellipse,
+svg .node.selected:hover>circle,
 svg .node.selected:hover>path,
+svg .node.selected:hover>polyline,
 svg .node.selected:hover>polygon {
 	stroke: $secondary;
 }
@@ -64,27 +77,32 @@ svg .node.highlight {
 	fill: $secondary;
 }
 
-svg .node.highlight>ellipse {
+svg .node.highlight>ellipse,
+svg .node.highlight>circle,
+svg .node.highlight>path,
+svg .node.highlight>polyline,
+svg .node.highlight>polygon {
 	stroke: $secondary;
 }
 
-svg .node.highlight:hover {
+svg .node.highlight:hover, {
 	fill: $secondary;
 }
 
 svg .node.highlight:hover>ellipse
 svg .node.highlight:hover>path,
+svg .node.highlight:hover>polyline,
 svg .node.highlight:hover>polygon {
 	stroke: $secondary;
 }
 
 svg .edge>path,
 svg .edge>polygon {
-	stroke: $lighten;
+	stroke: fade-out($terciary-foreground, 0.3);
 }
 
 svg .edge>polygon {
-	fill: $lighten;
+	fill: fade-out($terciary-foreground, 0.3);
 }
 
 svg .edge.selected>path,
@@ -119,10 +137,12 @@ svg:has(.selected) .node:not(.selected):not(.highlight) {
 }
 
 svg:has(.selected) .edge:not(.selected) {
-	opacity: 0;
+	opacity: 0.2;
 }
 svg .node>ellipse,
+svg .node>circle,
 svg .node>path,
+svg .node>polyline,
 svg .node>polygon {
 	stroke: $lighten;
 	filter: drop-shadow(1px 1px 1px $darken);
