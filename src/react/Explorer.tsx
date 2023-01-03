@@ -21,7 +21,6 @@ type ExplorerState = {
     graphCode: string,
     code: string,
     showDisconnectedNodes: boolean,
-    hasDisconnectedNodes: boolean,
 }
 
 class Explorer extends React.Component<ExplorerProps, ExplorerState> {
