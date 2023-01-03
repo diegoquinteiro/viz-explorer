@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import electronAPI from "../api/electron-api";
 // @ts-ignore
 import { GraphBaseModel, RootGraph, RootGraphModel, EdgeTarget, Edge } from "ts-graphviz";
@@ -20,6 +20,8 @@ type ExplorerState = {
     graphFilters: string[][],
     graphCode: string,
     code: string,
+    showDisconnectedNodes: boolean,
+    hasDisconnectedNodes: boolean,
 }
 
 class Explorer extends React.Component<ExplorerProps, ExplorerState> {
@@ -32,6 +34,7 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
             graphFilters: [],
             graphCode: props.file.contents,
             code: props.file.contents,
+            showDisconnectedNodes: true,
         }
     }
 
@@ -132,13 +135,40 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         subgraph.subgraphs.forEach((sub) => this.filterHiddenEdges(sub, hiddenNodeIds));
     }
 
+    filterDisconnectedNodes = (subgraph:GraphBaseModel, connectedNodeIds:string[]):string[] => {
+        const disconnectedNodes = subgraph.nodes
+            .filter(node => !connectedNodeIds.some(id => id == node.id));
+
+        const disconnectedNodesIds = disconnectedNodes.map(node => node.id);
+
+        if (!this.state.showDisconnectedNodes) {
+            disconnectedNodes.forEach(node => subgraph.removeNode(node));
+        }
+        return [...disconnectedNodesIds, ...subgraph.subgraphs.map(s => this.filterDisconnectedNodes(s, connectedNodeIds)).flat()];
+    }
+
     getAllNodeIds = (subgraph:GraphBaseModel):string[] => {
         return [...subgraph.nodes.map(n => n.id), ...subgraph.subgraphs.map(s => this.getAllNodeIds(s)).flat()];
     }
 
-    getFilteredGraph = (): { graph:RootGraphModel, hiddenNodeIds:string[] } => {
+    getAllConnectedNodeIds = (subgraph:GraphBaseModel):string[] => {
+        return [...subgraph.edges.map(e => this.getTargetedNodeIds(e)).flat(), ...subgraph.subgraphs.map(s => this.getAllConnectedNodeIds(s)).flat()];
+    }
+
+    getTargetedNodeIds = (edge:Edge):string[] => {
+        return edge.targets.map(target => {
+            if (Array.isArray(target)) {
+                return target.map(t => t.id);
+            }
+            else {
+                return target.id;
+            }
+        }).flat();
+    }
+
+    getFilteredGraph = (): { graph:RootGraphModel, hiddenNodeIds:string[], disconnectedNodeIds:string[] } => {
         if (this.state.graphFilters.some(f => f[0] == "subgraph:graph" && f.length == 1)) {
-            return { graph: VizExplorer.parse("strict digraph {}"),  hiddenNodeIds:[] };
+            return { graph: VizExplorer.parse("strict digraph {}"),  hiddenNodeIds:[], disconnectedNodeIds: [] };
         }
         let graph;
         try {
@@ -152,12 +182,16 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         this.filterSubgraph(graph, ["subgraph:graph"]);
         const filteredNodeIds = this.getAllNodeIds(graph);
 
-        const hiddenNodeIds = originalNodeIds.filter(node => !filteredNodeIds.find(n => n == node));
-
-
+        let hiddenNodeIds = originalNodeIds.filter(node => !filteredNodeIds.find(n => n == node));
         this.filterHiddenEdges(graph, hiddenNodeIds);
 
-        return { graph, hiddenNodeIds } ;
+        let disconnectedNodeIds:string[] = [];
+        disconnectedNodeIds = this.filterDisconnectedNodes(graph, this.getAllConnectedNodeIds(graph));
+        if (!this.state.showDisconnectedNodes) {
+            hiddenNodeIds = [...hiddenNodeIds, ...disconnectedNodeIds];
+        }
+
+        return { graph, hiddenNodeIds, disconnectedNodeIds } ;
     }
 
     handleFilter = (newFilter:string[], remove:boolean):void => {
@@ -192,6 +226,12 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
         this.props.onFileChange(code);
     }
 
+    toggleshowDisconnectedNodes = (e:SyntheticEvent) => {
+        this.setState({
+            showDisconnectedNodes: (e.target as HTMLInputElement).checked,
+        });
+    }
+
     render(): React.ReactNode {
         let graph;
         let error = "";
@@ -220,6 +260,12 @@ class Explorer extends React.Component<ExplorerProps, ExplorerState> {
                                 onFilter={this.handleFilter}
                             />
                         </ul>
+                        <div className="tools">
+                            <span className="showDisconnectedNodes" data-has-disconnected-nodes={filteredGraph.disconnectedNodeIds.length > 0}>
+                                <input type="checkbox" onChange={this.toggleshowDisconnectedNodes} checked={this.state.showDisconnectedNodes} />
+                                <span>Show disconnected nodes</span>
+                            </span>
+                        </div>
                     </section>
                 </section>
                 <section className="status">

@@ -227,9 +227,28 @@ svg {
 	background-color: $background-light;
 	display: flex;
 	flex-grow: 1;
+	flex-direction: column;
 	min-width: 20rem;
 	max-width: 20rem;
 	overflow: auto;
+}
+.outline > .tools {
+	display: flex;
+	flex-grow: 0;
+	padding: 0.4rem;
+	opacity: 0;
+	background-color: $darken;
+	transition-property: opacity;
+	transition-duration: 500ms;
+}
+.outline > .tools:has(*[data-has-disconnected-nodes="true"]) {
+	opacity: 0.5;
+}
+.outline:hover > .tools {
+	opacity: 1;
+}
+.outline > .tools span > span {
+	margin-left: 0.2rem;
 }
 
 .outline li {
@@ -242,6 +261,7 @@ svg {
 }
 .outline > ul {
 	margin: 1rem;
+	flex-grow: 1;
 }
 .outline .toggle {
 	cursor: pointer;
