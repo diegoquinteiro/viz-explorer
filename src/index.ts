@@ -37,6 +37,7 @@ async function handleOpenFile(e:any, filePath?:string): Promise<FileDescription>
 
   return {
     path: filePath,
+    id: filePath,
     contents: readFileSync(filePath).toString()
   }
 }
@@ -58,6 +59,7 @@ async function handleSaveFile(e:any, file:FileDescription, contents:string): Pro
   return {
     path: path,
     contents: contents,
+    id: path,
     changed: false,
   }
 }

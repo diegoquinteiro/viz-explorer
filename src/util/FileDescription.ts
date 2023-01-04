@@ -2,7 +2,7 @@ type FileDescription = {
     path: string,
     contents: string,
     changed?: boolean,
-    id?: string,
+    id: string,
 }
 
 export default FileDescription;

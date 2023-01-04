@@ -139,6 +139,8 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
 
     highlightSelected = () => {
         const svg = this.svgContainer.current?.firstChild as SVGSVGElement;
+        if (!svg) return;
+
         svg.querySelectorAll(".cluster, .node, .edge").forEach((i) => i.classList.remove("selected"));
 
         svg.querySelectorAll(".node, .cluster").forEach((i) => {
@@ -173,7 +175,9 @@ class GraphViewer extends React.Component<GraphViewerProps, GraphViewerState> {
     }
 
     shouldComponentUpdate(nextProps: Readonly<GraphViewerProps>, nextState: Readonly<GraphViewerState>, nextContext: any): boolean {
-        this.snapshot = getScaleAndOffset(this.svgContainer.current, this.svgContainer.current.firstChild as SVGSVGElement);
+        if (this.svgContainer.current) {
+            this.snapshot = getScaleAndOffset(this.svgContainer.current, this.svgContainer.current?.firstChild as SVGSVGElement);
+        }
         if (nextProps.graph != this.props.graph) return true;
         return false;
     }
