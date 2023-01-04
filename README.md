@@ -5,7 +5,7 @@
 
 A [GraphViz DOT language](https://graphviz.org/doc/info/lang.html) editor and visualizer.
 
-<img width="935" alt="screenshot-no-shadow" src="https://user-images.githubusercontent.com/1878108/210617526-07c1e3e9-c7a8-4ce3-b964-1a36af6f9e87.png">
+<img width="1012" alt="screenshot" src="https://user-images.githubusercontent.com/1878108/210617895-67e38dd7-d150-462a-82e1-68cc0291e2bc.png">
 
 ## Installing
 
