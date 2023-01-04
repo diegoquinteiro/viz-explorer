@@ -36,6 +36,7 @@ const sampleFile:FileDescription = {
             f -> c
         }
     }
-}`,
+}`  ,
+    id: "sample",
 }
 export default sampleFile;
