@@ -217,7 +217,7 @@ class Page extends React.Component<{}, PageState> {
             >
                 {this.state.files.map((file, i) =>
                     <li key={file.id} className={[i == this.state.selectedTab ? "selected" : "", file.changed ? "changed" : ""].join(" ")} onClick={this.handleSelectTab.bind(this, i)}>
-                        <img className="icon" src="/static/icon.png" width="16" height="16" /> <span className="filename">{file.path ? file.path.replace(/^.*[\\\/]/, '') : "(New file)"}</span>
+                        <span className="icon">{file.path.match(/\.[0-9a-z]+$/i) ? file.path.match(/\.[0-9a-z]+$/i)[0].slice(1).toUpperCase() :  "GV"}</span> <span className="filename">{file.path ? file.path.replace(/^.*[\\\/]/, '') : "(New file)"}</span>
                         <button className="close" onClick={this.handleCloseTab.bind(this, i)}>✚</button>
                     </li>
                 )}

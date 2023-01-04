@@ -60,10 +60,25 @@ svg {
 }
 
 .tabs li .icon {
-	display: inline-block;
-	margin-bottom: -0.2rem;
+	display: block;
+	float: left;
+	font-size: 0.4rem;
+	width: 1rem;
+	height: 1rem;
+	line-height: 1rem;
+	text-overflow: ellipsis;
+	overflow: clip;
+	white-space: nowrap;
+	text-align: center;
+	margin-top: 0.2rem;
+	margin-right: 0.4rem;
+	font-weight: bold;
+	color: $backdrop;
+	background-color: $secondary-foreground;
 }
-
+.tabs li.selected .icon {
+	background-color: $terciary-foreground;
+}
 .tabs li.selected {
 	background-color: $backdrop;
 	box-shadow: 1px 1px 2px 2px $darken;
