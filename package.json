@@ -7,9 +7,9 @@
   "repository": "diegoquinteiro/viz-explorer",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package --arch=universal",
-    "make": "electron-forge make --arch=universal",
-    "publish": "electron-forge publish --arch=universal",
+    "package": "electron-forge package --arch=universal,x64,arm64",
+    "make": "electron-forge make --arch=universal,x64,arm64",
+    "publish": "electron-forge publish --arch=universal,x64,arm64",
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],
