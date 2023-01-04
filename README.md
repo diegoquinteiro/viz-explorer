@@ -24,3 +24,84 @@ Open a [DOT](https://graphviz.org/doc/info/lang.html) file (`.gv`) through `File
   - For complex graphs, you can disable showing disconnected nodes (those not connected to any other node).
 - You can resize or hide the editor and outline.
 
+## Basic DOT language
+
+DOT is a language to describe graphs.
+
+You can have either a `digraph` (directional graphs, where edges have an arrow) or a simple `graph`.
+
+```dot
+digraph { a -> b }
+```
+![digraph](https://user-images.githubusercontent.com/1878108/210628864-d6b24a3d-8831-43f2-a6a6-3b2bd5082460.png)
+
+or
+
+
+```dot
+graph { a -- b }
+```
+![graph](https://user-images.githubusercontent.com/1878108/210628914-52feb83a-5bdc-4686-a02b-b6afa39be932.png)
+
+
+Nodes can be a single `word` or `"multiple words in quotes"`:
+
+
+```dot
+digraph {
+  "South America"
+  Brazil
+  
+  "South America" -> Brazil
+}
+```
+![brazil](https://user-images.githubusercontent.com/1878108/210628926-e2447e5b-1729-42b0-be5e-61497eb22db0.png)
+
+
+You can also have subgraphs to organize your graph:
+
+```dot
+digraph {
+  subgraph Continents {
+    "North America"
+    "South America"
+  }
+  
+  subgraph Countries {
+    Mexico
+    USA
+    Brazil
+    Argentina
+  }
+  
+  "North America" -> { Mexico, USA }
+  "South America" -> { Brazil, Argentina }
+}
+```
+![americas](https://user-images.githubusercontent.com/1878108/210628966-0e7ccc3d-2a6f-4114-8c1c-4781b7603823.png)
+
+
+Subgraphs can be rendered as their own container boxes (clusters):
+
+
+```dot
+digraph {
+  subgraph Continents {
+    label="List of continents"
+    cluster=true
+    
+    America
+    Europe
+    Asia
+    Africa
+    Oceania
+    Antartica
+  }
+}
+```
+![continents](https://user-images.githubusercontent.com/1878108/210629002-fcf2f8c7-dc04-4caf-b825-2327241f60e1.png)
+
+DOT is a very flexible language, and you can check the full documentation here: [https://graphviz.org/doc/info/lang.html](https://graphviz.org/doc/info/lang.html)
+
+
+
