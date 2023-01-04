@@ -26,7 +26,7 @@ async function handleOpenFile(e:any, filePath?:string): Promise<FileDescription>
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
-        { name: 'DOT files', extensions: ['dot', 'gv'] },
+        { name: 'DOT files', extensions: ['gv', 'dot'] },
         { name: 'All Files', extensions: ['*'] },
     ]});
     if (canceled) {
@@ -48,7 +48,7 @@ async function handleSaveFile(e:any, file:FileDescription, contents:string): Pro
   if (!path) {
     const { canceled, filePath } = await dialog.showSaveDialog({
       filters: [
-        { name: 'DOT files', extensions: ['dot', 'gv'] },
+        { name: 'DOT files', extensions: ['gv', 'dot'] },
         { name: 'All Files', extensions: ['*'] },
     ]});
     if (canceled) return;
