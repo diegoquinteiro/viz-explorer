@@ -14,6 +14,8 @@ const gotTheLock = app.requestSingleInstanceLock();
 
 app.name = "GraphViz Explorer";
 
+require('update-electron-app')();
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -24,7 +26,7 @@ async function handleOpenFile(e:any, filePath?:string): Promise<FileDescription>
     const { canceled, filePaths } = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
-        { name: 'DOT files', extensions: ['dot'] },
+        { name: 'DOT files', extensions: ['dot', 'gv'] },
         { name: 'All Files', extensions: ['*'] },
     ]});
     if (canceled) {
@@ -45,7 +47,7 @@ async function handleSaveFile(e:any, file:FileDescription, contents:string): Pro
   if (!path) {
     const { canceled, filePath } = await dialog.showSaveDialog({
       filters: [
-        { name: 'DOT files', extensions: ['dot'] },
+        { name: 'DOT files', extensions: ['dot', 'gv'] },
         { name: 'All Files', extensions: ['*'] },
     ]});
     if (canceled) return;
