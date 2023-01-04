@@ -8,7 +8,9 @@
       <key>CFBundleTypeExtensions</key>
       <array>
         <string>dot</string>
+        <string>gv</string>
         <string>DOT</string>
+        <string>GV</string>
       </array>
       <key>CFBundleTypeMIMETypes</key>
       <array>
