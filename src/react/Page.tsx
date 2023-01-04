@@ -3,6 +3,8 @@ import * as React from "react";
 import FileDescription from "../util/FileDescription";
 import Explorer from "./Explorer";
 import emptyFile from "../viz/empty-file";
+import { ReactSortable } from "react-sortablejs";
+import { stat } from "fs";
 
 type PageState = {
    files: FileDescription[],
@@ -201,14 +203,25 @@ class Page extends React.Component<{}, PageState> {
                 <span className="dark-theme-only">☼</span>
                 <span className="light-theme-only">☽</span>
             </button>
-            <ul className="tabs">
+            <ReactSortable
+                className="tabs"
+                tag="ul"
+                list={this.state.files}
+                setList={(newFiles) => this.setState((state) => {
+                    let newSelectedTab = newFiles.indexOf(newFiles.find(f => f.id == state.files[state.selectedTab].id));
+                    return {
+                        files: newFiles,
+                        selectedTab: newSelectedTab,
+                    }
+                })}
+            >
                 {this.state.files.map((file, i) =>
-                    <li key={i} className={[i == this.state.selectedTab ? "selected" : "", file.changed ? "changed" : ""].join(" ")} onClick={this.handleSelectTab.bind(this, i)}>
+                    <li key={file.id} className={[i == this.state.selectedTab ? "selected" : "", file.changed ? "changed" : ""].join(" ")} onClick={this.handleSelectTab.bind(this, i)}>
                         <img className="icon" src="/static/icon.png" width="16" height="16" /> <span className="filename">{file.path ? file.path.replace(/^.*[\\\/]/, '') : "(New file)"}</span>
                         <button className="close" onClick={this.handleCloseTab.bind(this, i)}>✚</button>
                     </li>
                 )}
-            </ul>
+            </ReactSortable>
             {this.state.files.map((file, i) =>
                 <div key={i} className={["tabContent", i == this.state.selectedTab ? "selected" : null].join(' ')}>
                     <Explorer key={file.path + ("" + file.id)} file={file}
