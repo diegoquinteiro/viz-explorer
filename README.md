@@ -9,7 +9,7 @@ A [GraphViz DOT language](https://graphviz.org/doc/info/lang.html) editor and vi
 
 ## Installing
 
-Download the [latest release](/releases/lastest) and drop it on your `📁/Applications` folder.
+Download the [latest release](https://github.com/diegoquinteiro/viz-explorer/releases/) and drop it on your `📁/Applications` folder.
 
 
 ## Usage
